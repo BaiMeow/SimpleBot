@@ -2,7 +2,6 @@ package bot
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -23,8 +22,6 @@ type groupMsgReplyDetails struct {
 
 func handleAPIReply(data []byte, b *Bot) {
 	reply := new(preUnmarshalReply)
-	fmt.Println(json.Unmarshal(data, reply))
-	fmt.Println(reply)
 	if waitReply[reply.Echo] != nil {
 		waitReply[reply.Echo](data, reply.Status == "ok")
 		delete(waitReply, reply.Echo)
