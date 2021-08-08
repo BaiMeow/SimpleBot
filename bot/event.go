@@ -40,9 +40,16 @@ func handleEvent(data []byte, b *Bot) {
 	case "message":
 		switch preload.MessageType {
 		case "group":
-			handleGroupEvent(data, b)
+			switch preload.SubType {
+			case "normal":
+				handleGroupMsg(data, b)
+			}
 		case "private":
-			handlePrivateEvent(data, b)
+			switch preload.SubType {
+			case "friend":
+				handlePrivateMsg(data, b)
+			}
+
 		}
 	case "notice":
 
@@ -79,7 +86,7 @@ type groupEventFull struct {
 	}
 }
 
-func handleGroupEvent(data []byte, b *Bot) {
+func handleGroupMsg(data []byte, b *Bot) {
 	ev := new(groupEventFull)
 	json.Unmarshal(data, ev)
 	list := b.listeners[fmt.Sprintf("%s.%s.%s", ev.PostType, ev.MessageType, ev.SubType)]
@@ -94,4 +101,9 @@ func handleGroupEvent(data []byte, b *Bot) {
 	}
 }
 
-func handlePrivateEvent(data []byte, b *Bot) {}
+type privateEventFull struct {
+}
+
+func handlePrivateMsg(data []byte, b *Bot) {
+
+}
