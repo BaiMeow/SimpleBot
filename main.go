@@ -16,12 +16,12 @@ func main() {
 	b = bot.New(driver.NewWsDriver(addr, token))
 	b.Attach("message.group.normal", &handler.GroupMsgHandler{
 		Priority: 1,
-		F:        justprint,
+		F:        justreply,
 	})
 	b.Run()
 }
 
-func justprint(MsgID int32, GroupID int64, FromQQ int64, Msg string) bool {
+func justreply(MsgID int32, GroupID int64, FromQQ int64, Msg string) bool {
 	b.SendGroupMsg(GroupID, Msg)
 	return false
 }

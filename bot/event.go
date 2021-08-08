@@ -42,15 +42,18 @@ func handleEvent(data []byte, b *Bot) {
 		case "group":
 			handleGroupEvent(data, b)
 		case "private":
-			handlePrivateEvent(data)
+			handlePrivateEvent(data, b)
 		}
 	case "notice":
 
 	case "request":
-
+	//不是Event那应该是api的回复
+	case "":
+		handleAPIReply(data, b)
 	}
 }
 
+//虽然mirai传了一堆参数，但是用得到的毕竟是少数
 type groupEventFull struct {
 	Time        int64  `json:"time"`
 	SelfID      int64  `json:"self_id"`
@@ -80,24 +83,15 @@ func handleGroupEvent(data []byte, b *Bot) {
 	ev := new(groupEventFull)
 	json.Unmarshal(data, ev)
 	list := b.listeners[fmt.Sprintf("%s.%s.%s", ev.PostType, ev.MessageType, ev.SubType)]
-	for i, v := range list.heap {
+	for _, v := range list.heap {
 		h, ok := v.(*handler.GroupMsgHandler)
 		if !ok {
-			defer func(j int) {
-				list.lock.Lock()
-				defer list.lock.Unlock()
-				if j == len(list.heap)-1 {
-					list.heap = list.heap[:j]
-				} else {
-					list.heap = append(list.heap[:j], list.heap[j+1:]...)
-				}
-			}(i)
+			continue
 		}
 		if h.F(ev.MessageID, ev.GroupID, ev.Sender.UserID, ev.Message) {
 			return
 		}
 	}
-
 }
 
-func handlePrivateEvent(data []byte) {}
+func handlePrivateEvent(data []byte, b *Bot) {}

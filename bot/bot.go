@@ -28,12 +28,15 @@ func (b *Bot) Run() {
 }
 
 func (b *Bot) Attach(pos string, a listener) {
+	//todo:check listener valid
 	if b.listeners[pos] == nil {
 		b.listeners[pos] = &listenerHeap{
 			heap: []listener{a},
 		}
 		return
 	}
+	b.listeners[pos].lock.Lock()
+	defer b.listeners[pos].lock.Unlock()
 	b.listeners[pos].Push(a)
 	sort.Sort(b.listeners[pos])
 }
