@@ -1,4 +1,4 @@
-module github.com/MscBaiMeow/SimpleBot
+module github.com/BaiMeow/SimpleBot
 
 go 1.16
 

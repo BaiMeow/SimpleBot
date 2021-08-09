@@ -2,9 +2,9 @@
 package main
 
 import (
-	"github.com/MscBaiMeow/SimpleBot/bot"
-	"github.com/MscBaiMeow/SimpleBot/driver"
-	"github.com/MscBaiMeow/SimpleBot/handler"
+	"github.com/BaiMeow/SimpleBot/bot"
+	"github.com/BaiMeow/SimpleBot/driver"
+	"github.com/BaiMeow/SimpleBot/handler"
 )
 
 var addr = "ws://localhost:6700"

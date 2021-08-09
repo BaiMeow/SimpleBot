@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/MscBaiMeow/SimpleBot/handler"
+	"github.com/BaiMeow/SimpleBot/handler"
 )
 
 type preUnmarshal struct {

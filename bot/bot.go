@@ -4,7 +4,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/MscBaiMeow/SimpleBot/driver"
+	"github.com/BaiMeow/SimpleBot/driver"
 )
 
 type Bot struct {
