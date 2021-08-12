@@ -1,10 +1,5 @@
 package message
 
-import (
-	"fmt"
-	"reflect"
-)
-
 type ArrayMessage []arrayMessageUnit
 
 type arrayMessageUnit struct {
@@ -42,11 +37,6 @@ func (u Face) getType() string {
 
 func (u Image) getType() string {
 	return "image"
-}
-
-func ToMsgStruct(a interface{}) (*Msg, error) {
-	fmt.Println(reflect.TypeOf(a))
-	return nil, nil
 }
 
 func (a *ArrayMessage) ToMsgStruct() *Msg {
