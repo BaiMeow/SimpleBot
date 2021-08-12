@@ -13,7 +13,7 @@ func (h *GroupMsgHandler) GetPriority() int {
 
 type PrivateMsgHandler struct {
 	Priority int
-	F        func(MsgID int32, FromQQ int64, Msg string) bool
+	F        func(MsgID int32, FromQQ int64, Msg *message.Msg) bool
 }
 
 func (h *PrivateMsgHandler) GetPriority() int {

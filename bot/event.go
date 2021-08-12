@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/BaiMeow/SimpleBot/handler"
-	"github.com/BaiMeow/SimpleBot/message"
 )
 
 type preUnmarshal struct {
@@ -60,37 +59,17 @@ func handleEvent(data []byte, b *Bot) {
 	}
 }
 
-//虽然mirai传了一堆参数，但是用得到的毕竟是少数
-type groupEventFull struct {
-	Time      int64 `json:"time"`
-	SelfID    int64 `json:"self_id"`
-	MessageID int32 `json:"message_id"`
-	GroupID   int64 `json:"group_id"`
-	UserID    int64 `json:"user_id"`
-	Anonymous struct {
-		ID   int64  `json:"id"`
-		Name string `json:"name"`
-		Flag string `json:"flag"`
-	} `json:"anonymous,omitempty"`
-	Message    message.ArrayMessage `json:"message"`
-	RawMessage string               `json:"raw_message"`
-	Font       int32                `json:"font"`
-	Sender     struct {
-		UserID   int64  `json:"user_id"`
-		NickName string `json:"nickname"`
-		Sex      string `json:"sex"`
-		Age      int32  `json:"age"`
-	}
-}
-
 func handleGroupMsg(data []byte, b *Bot) {
-	ev := new(groupEventFull)
-	if err := json.Unmarshal(data, ev); err != nil {
-		log.Println(err)
+	listener := b.listeners["message.group.normal"]
+	if listener == nil {
 		return
 	}
+	ev := new(groupEventFull)
+	if err := handleUnmarshal(data, ev); err != nil {
+		log.Println(err)
+	}
 	msg := ev.Message.ToMsgStruct()
-	for _, v := range b.listeners["message.group.normal"].heap {
+	for _, v := range listener.heap {
 		h, ok := v.(*handler.GroupMsgHandler)
 		if !ok {
 			continue
@@ -103,34 +82,22 @@ func handleGroupMsg(data []byte, b *Bot) {
 	}
 }
 
-type privateEventFull struct {
-	Time       int64  `json:"time"`
-	SelfID     int64  `json:"self_id"`
-	MessageID  int32  `json:"message_id"`
-	UserID     int64  `json:"user_id"`
-	Message    string `json:"message"`
-	RawMessage string `json:"raw_message"`
-	Font       string `json:"font"`
-	Sender     struct {
-		UserID   int64  `json:"user_id"`
-		NickName string `json:"nickname"`
-		Sex      string `json:"sex"`
-		Age      int32  `json:"age"`
-	} `json:"sender"`
-}
-
 func handlePrivateMsg(data []byte, b *Bot) {
-	ev := new(privateEventFull)
-	if err := json.Unmarshal(data, ev); err != nil {
-		log.Println(err)
+	listener := b.listeners["message.private.friend"]
+	if listener == nil {
 		return
 	}
-	for _, v := range b.listeners["msg.private.friend"].heap {
+	ev := new(privateEventFull)
+	if err := handleUnmarshal(data, ev); err != nil {
+		log.Println(err)
+	}
+	msg := ev.Message.ToMsgStruct()
+	for _, v := range listener.heap {
 		h, ok := v.(*handler.PrivateMsgHandler)
 		if !ok {
 			continue
 		}
-		if h.F(ev.MessageID, ev.Sender.UserID, ev.Message) {
+		if h.F(ev.MessageID, ev.Sender.UserID, msg) {
 			return
 		}
 	}

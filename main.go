@@ -21,12 +21,26 @@ func main() {
 		Priority: 1,
 		F:        justreply,
 	})
+	b.Attach("message.private.friend", &handler.PrivateMsgHandler{
+		Priority: 1,
+		F:        justreply2,
+	})
 	b.Run()
 }
 
 func justreply(MsgID int32, GroupID int64, FromQQ int64, Msg *message.Msg) bool {
 	log.Println("new message")
 	if msgid, err := b.SendGroupMsg(GroupID, Msg); err != nil {
+		log.Println(err)
+	} else {
+		log.Panicln(msgid)
+	}
+	return false
+}
+
+func justreply2(msgid int32, fromqq int64, msg *message.Msg) bool {
+	log.Println("new message")
+	if msgid, err := b.SendPrivateMsg(fromqq, msg); err != nil {
 		log.Println(err)
 	} else {
 		log.Panicln(msgid)
