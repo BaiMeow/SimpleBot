@@ -3,8 +3,6 @@ package bot
 import (
 	"encoding/json"
 	"log"
-
-	"github.com/BaiMeow/SimpleBot/handler"
 )
 
 type preUnmarshal struct {
@@ -60,44 +58,35 @@ func handleEvent(data []byte, b *Bot) {
 }
 
 func handleGroupMsg(data []byte, b *Bot) {
-	listener := b.listeners["message.group.normal"]
-	if listener == nil {
+	if b.groupMsgListeners == nil {
 		return
 	}
 	ev := new(groupEventFull)
 	if err := handleUnmarshal(data, ev); err != nil {
 		log.Println(err)
+		return
 	}
 	msg := ev.Message.ToMsgStruct()
-	for _, v := range listener.heap {
-		h, ok := v.(*handler.GroupMsgHandler)
-		if !ok {
-			continue
-		}
-		if h.F(ev.MessageID, ev.GroupID, ev.Sender.UserID, msg) {
-			{
-				return
-			}
+	for _, v := range b.groupMsgListeners.heap {
+		if v.F(ev.MessageID, ev.GroupID, ev.Sender.UserID, msg) {
+
+			return
 		}
 	}
 }
 
 func handlePrivateMsg(data []byte, b *Bot) {
-	listener := b.listeners["message.private.friend"]
-	if listener == nil {
+	if b.privateMsgListeners == nil {
 		return
 	}
 	ev := new(privateEventFull)
 	if err := handleUnmarshal(data, ev); err != nil {
 		log.Println(err)
+		return
 	}
 	msg := ev.Message.ToMsgStruct()
-	for _, v := range listener.heap {
-		h, ok := v.(*handler.PrivateMsgHandler)
-		if !ok {
-			continue
-		}
-		if h.F(ev.MessageID, ev.Sender.UserID, msg) {
+	for _, v := range b.privateMsgListeners.heap {
+		if v.F(ev.MessageID, ev.Sender.UserID, msg) {
 			return
 		}
 	}

@@ -7,7 +7,7 @@
 ### 已经实现或将要实现或迫切需要的事件
 
 - [x] message.group.normal 群聊
-- [ ] message.private.friend 私聊
+- [x] message.private.friend 私聊
 - [ ] notice.group_decrease.leave 群员自主退群
 - [ ] notice.group_decrease.kick 群员被踢
 - [ ] notice.group_decrease.kick_me 自己被踢
