@@ -32,8 +32,8 @@ func (b *Bot) Run() {
 	}
 }
 
-func (b *Bot) Attach(pos string, a listener) {
-	//todo:check listener valid
+func (b *Bot) Attach(a listener) {
+	var pos string
 	//单独处理群消息和私聊消息
 	switch a.(type) {
 	case *handler.GroupMsgHandler:

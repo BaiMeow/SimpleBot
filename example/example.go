@@ -17,11 +17,11 @@ var b *bot.Bot
 
 func main() {
 	b = bot.New(driver.NewWsDriver(addr, token))
-	b.Attach("message.group.normal", &handler.GroupMsgHandler{
+	b.Attach(&handler.GroupMsgHandler{
 		Priority: 1,
 		F:        justreply,
 	})
-	b.Attach("message.private.friend", &handler.PrivateMsgHandler{
+	b.Attach(&handler.PrivateMsgHandler{
 		Priority: 1,
 		F:        justreply2,
 	})
@@ -38,7 +38,7 @@ func justreply(MsgID int32, GroupID int64, FromQQ int64, Msg *message.Msg) bool 
 	return false
 }
 
-func justreply2(msgid int32, fromqq int64, msg *message.Msg) bool {
+func justreply2(MsgID int32, fromqq int64, msg *message.Msg) bool {
 	log.Println("new message")
 	if msgid, err := b.SendPrivateMsg(fromqq, msg); err != nil {
 		log.Println(err)

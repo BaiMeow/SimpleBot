@@ -23,7 +23,7 @@
 - [ ] request.group.add 他人加群请求
 - [ ] request.group.invite 收到加群邀请
 
-### 不常用或不会支持或不愿意支持或我认为没用的事件
+### 延后实现的事件
 
 - message.group.anonymous 群匿名聊天，建议所有群关闭匿名
 - message.group.notice 群系统提示
@@ -44,7 +44,7 @@
 > 没有意外的话sdk中api名称是这里的驼峰命名形式
 
 - [x] send_group_msg 发送群消息
-- [ ] send_private_msg 发送私聊消息
+- [x] send_private_msg 发送私聊消息
 - [ ] delete_msg 撤回消息
 - [ ] get_msg 获取消息
 - [ ] get_forward_msg 获取合并转发消息
@@ -64,7 +64,7 @@
 - [ ] get_group_member_list 获取群成员列表
 - [ ] get_image 获取图片
 
-### 不常用或不会支持或不愿意支持或我认为没用的API
+### 延后实现的API
 
 - send_msg 发送消息，重复
 - send_like 发送好友赞，不在乎

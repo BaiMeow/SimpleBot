@@ -53,7 +53,7 @@ func handleEvent(data []byte, b *Bot) {
 	case "request":
 	//不是Event那应该是api的回复
 	case "":
-		handleAPIReply(data, b)
+		handleAPIReply(data)
 	}
 }
 

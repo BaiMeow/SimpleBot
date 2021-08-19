@@ -8,21 +8,21 @@ import (
 	"github.com/google/uuid"
 )
 
-//
+// ErrJsonUnmarshal json序列化中出错
 var ErrJsonUnmarshal = errors.New("JsonUnmarshalError")
 
 var waitReply = make(map[uuid.UUID]func([]byte, bool))
 
 type preUnmarshalReply struct {
 	Echo    uuid.UUID `json:"echo"`
-	Retcode int       `json:"retcode"`
+	RetCode int       `json:"retcode"`
 	Status  string    `json:"status"`
 }
 
 type apiCallFramework struct {
-	Action  string      `json:"action"`
-	Paramas interface{} `json:"params"`
-	Echo    uuid.UUID   `json:"echo"`
+	Action string      `json:"action"`
+	Params interface{} `json:"params"`
+	Echo   uuid.UUID   `json:"echo"`
 }
 
 type groupMsg struct {
@@ -47,7 +47,7 @@ type privateMsgReplyDetails struct {
 	MessageID int32 `json:"message_id"`
 }
 
-func handleAPIReply(data []byte, b *Bot) {
+func handleAPIReply(data []byte) {
 	reply := new(preUnmarshalReply)
 	if waitReply[reply.Echo] != nil {
 		waitReply[reply.Echo](data, reply.Status == "ok")
@@ -55,12 +55,12 @@ func handleAPIReply(data []byte, b *Bot) {
 	}
 }
 
-//返回MsgID
+//SendGroupMsg 发送群聊消息(不含匿名消息)
 func (b *Bot) SendGroupMsg(group int64, msg *message.Msg) (int32, error) {
 	id := uuid.New()
 	bytes, err := json.Marshal(&apiCallFramework{
 		Action: "send_group_msg",
-		Paramas: groupMsg{
+		Params: groupMsg{
 			GroupID:    group,
 			Message:    msg.ToArrayMessage(),
 			AutoEscape: false,
@@ -71,31 +71,32 @@ func (b *Bot) SendGroupMsg(group int64, msg *message.Msg) (int32, error) {
 		return 0, err
 	}
 	b.driver.Write(bytes)
-	msgid := make(chan int32, 1)
+	msgID := make(chan int32, 1)
 	waitReply[id] = func(data []byte, ok bool) {
 		if !ok {
-			msgid <- 0
+			msgID <- 0
 			return
 		}
 		details := new(groupMsgReplyDetails)
 		if err := json.Unmarshal(data, &details); err != nil {
-			msgid <- 0
+			msgID <- 0
 			return
 		}
-		msgid <- details.Data.MessageID
+		msgID <- details.Data.MessageID
 	}
-	recMsgid := <-msgid
-	if recMsgid == 0 {
+	recMsgID := <-msgID
+	if recMsgID == 0 {
 		return 0, ErrJsonUnmarshal
 	}
-	return recMsgid, nil
+	return recMsgID, nil
 }
 
+//SendPrivateMsg 发送私聊消息
 func (b *Bot) SendPrivateMsg(qq int64, msg *message.Msg) (int32, error) {
 	id := uuid.New()
 	bytes, err := json.Marshal(&apiCallFramework{
 		Action: "send_private_msg",
-		Paramas: privateMsg{
+		Params: privateMsg{
 			UserID:     qq,
 			Message:    msg.ToArrayMessage(),
 			AutoEscape: false,
@@ -106,20 +107,20 @@ func (b *Bot) SendPrivateMsg(qq int64, msg *message.Msg) (int32, error) {
 		return 0, err
 	}
 	b.driver.Write(bytes)
-	msgid := make(chan int32, 1)
+	msgID := make(chan int32, 1)
 	waitReply[id] = func(data []byte, ok bool) {
 		if !ok {
-			msgid <- 0
+			msgID <- 0
 		}
 		details := new(privateMsgReplyDetails)
 		if err := json.Unmarshal(data, details); err != nil {
-			msgid <- 0
+			msgID <- 0
 		}
-		msgid <- details.MessageID
+		msgID <- details.MessageID
 	}
-	recMsgid := <-msgid
-	if recMsgid == 0 {
+	recMsgID := <-msgID
+	if recMsgID == 0 {
 		return 0, ErrJsonUnmarshal
 	}
-	return recMsgid, nil
+	return recMsgID, nil
 }
