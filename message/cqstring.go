@@ -4,12 +4,6 @@ import (
 	"strings"
 )
 
-func CQstrToMsgStruct(data *[]byte) *Msg {
-	return &Msg{Text{
-		Text: "cqstring",
-	}}
-}
-
 func CQstrToArrayMessage(str string) *ArrayMessage {
 	i := 0
 	section := []string{""}

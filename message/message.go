@@ -10,7 +10,8 @@ type arrayMessageUnit struct {
 type Msg []msgUnit
 
 type msgUnit interface {
-	getType() string
+	//GetType 返回 text face image
+	GetType() string
 }
 
 type Text struct {
@@ -27,15 +28,15 @@ type Image struct {
 	URL  string
 }
 
-func (u Text) getType() string {
+func (u Text) GetType() string {
 	return "text"
 }
 
-func (u Face) getType() string {
+func (u Face) GetType() string {
 	return "face"
 }
 
-func (u Image) getType() string {
+func (u Image) GetType() string {
 	return "image"
 }
 
@@ -66,10 +67,10 @@ func (a ArrayMessage) ToMsgStruct() Msg {
 	return msg
 }
 
-func (a Msg) ToArrayMessage() ArrayMessage {
+func (msg Msg) ToArrayMessage() ArrayMessage {
 	var arrayMsg ArrayMessage
-	for _, v := range a {
-		switch v.getType() {
+	for _, v := range msg {
+		switch v.GetType() {
 		case "text":
 			tmp := v.(Text)
 			arrayMsg = append(arrayMsg, arrayMessageUnit{
