@@ -2,6 +2,7 @@ package bot
 
 import (
 	"encoding/json"
+	"github.com/BaiMeow/SimpleBot/handler"
 	"log"
 )
 
@@ -51,6 +52,14 @@ func handleEvent(data []byte, b *Bot) {
 	case "notice":
 
 	case "request":
+		switch preload.RequestType {
+		case "group":
+			switch preload.SubType {
+			case "add":
+				handleGroupAdd(data, b)
+			case "invite":
+			}
+		}
 	//不是Event那应该是api的回复
 	case "":
 		handleAPIReply(data)
@@ -87,6 +96,24 @@ func handlePrivateMsg(data []byte, b *Bot) {
 	msg := ev.Message.ToMsgStruct()
 	for _, v := range b.privateMsgListeners.heap {
 		if v.F(ev.MessageID, ev.Sender.UserID, msg) {
+			return
+		}
+	}
+}
+
+func handleGroupAdd(data []byte, b *Bot) {
+	if b.listeners["request.group.add"] == nil {
+		return
+	}
+	listeners := b.listeners["request.group.add"]
+	ev := new(groupAddEventFull)
+	if err := json.Unmarshal(data, ev); err != nil {
+		log.Println(err)
+		return
+	}
+	for _, v := range listeners.heap {
+		v := v.(*handler.GroupAddHandler)
+		if v.F(ev.GroupID, ev.UserID, ev.Comment, ev.Flag) {
 			return
 		}
 	}

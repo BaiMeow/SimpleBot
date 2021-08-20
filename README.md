@@ -20,7 +20,7 @@
 - [ ] notice.friend_recall 好友撤回
 - [ ] notice.notify.poke 戳一戳
 - [ ] request.friend 加好友请求
-- [ ] request.group.add 他人加群请求
+- [x] request.group.add 他人加群请求
 - [ ] request.group.invite 收到加群邀请
 
 ### 延后实现的事件
@@ -55,7 +55,7 @@
 - [ ] set_group_leave 退出群组
 - [ ] set_group_special_title 设置群组专属头衔
 - [ ] set_friend_add_request 处理加好友请求
-- [ ] set_group_add_request 处理加群请求／邀请
+- [x] set_group_add_request 处理加群请求／邀请
 - [ ] get_login_info 获取登录号信息
 - [ ] get_friend_list 获取好友列表
 - [ ] get_group_info 获取群信息

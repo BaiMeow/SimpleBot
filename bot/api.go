@@ -47,6 +47,13 @@ type privateMsgReplyDetails struct {
 	MessageID int32 `json:"message_id"`
 }
 
+type groupAddOrInvite struct {
+	Flag    string `json:"flag"`
+	SubType string `json:"sub_type"`
+	Approve bool   `json:"approve"`
+	Reason  string `json:"reason"`
+}
+
 func handleAPIReply(data []byte) {
 	reply := new(preUnmarshalReply)
 	if waitReply[reply.Echo] != nil {
@@ -70,7 +77,7 @@ func (b *Bot) SendGroupMsg(group int64, msg *message.Msg) (int32, error) {
 	if err != nil {
 		return 0, err
 	}
-	b.driver.Write(bytes)
+
 	msgID := make(chan int32, 1)
 	waitReply[id] = func(data []byte, ok bool) {
 		if !ok {
@@ -84,6 +91,7 @@ func (b *Bot) SendGroupMsg(group int64, msg *message.Msg) (int32, error) {
 		}
 		msgID <- details.Data.MessageID
 	}
+	b.driver.Write(bytes)
 	recMsgID := <-msgID
 	if recMsgID == 0 {
 		return 0, ErrJsonUnmarshal
@@ -106,7 +114,6 @@ func (b *Bot) SendPrivateMsg(qq int64, msg *message.Msg) (int32, error) {
 	if err != nil {
 		return 0, err
 	}
-	b.driver.Write(bytes)
 	msgID := make(chan int32, 1)
 	waitReply[id] = func(data []byte, ok bool) {
 		if !ok {
@@ -118,9 +125,31 @@ func (b *Bot) SendPrivateMsg(qq int64, msg *message.Msg) (int32, error) {
 		}
 		msgID <- details.MessageID
 	}
+	b.driver.Write(bytes)
 	recMsgID := <-msgID
 	if recMsgID == 0 {
 		return 0, ErrJsonUnmarshal
 	}
 	return recMsgID, nil
+}
+
+//RespondGroupAdd 回应加群申请,reason仅在拒绝申请时填写。flag没什么特别的意思，相当于id。
+func (b *Bot) RespondGroupAdd(approve bool, flag, reason string) error {
+	if approve {
+		reason = ""
+	}
+	bytes, err := json.Marshal(&apiCallFramework{
+		Action: "set_group_add_request",
+		Params: groupAddOrInvite{
+			Flag:    flag,
+			SubType: "add",
+			Approve: approve,
+			Reason:  reason,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	b.driver.Write(bytes)
+	return nil
 }

@@ -41,6 +41,15 @@ type privateEventFull struct {
 	} `json:"sender"`
 }
 
+type groupAddEventFull struct {
+	Time    int64  `json:"time"`
+	SelfID  int64  `json:"self_id"`
+	GroupID int64  `json:"group_id"`
+	UserID  int64  `json:"user_id"`
+	Comment string `json:"comment"`
+	Flag    string `json:"flag"`
+}
+
 func (f *groupEventFull) getMessage() *message.ArrayMessage {
 	return &f.Message
 }
