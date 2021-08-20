@@ -32,7 +32,7 @@ func main() {
 	b.Run()
 }
 
-func justReply(MsgID int32, GroupID int64, UserID int64, Msg *message.Msg) bool {
+func justReply(MsgID int32, GroupID int64, UserID int64, Msg message.Msg) bool {
 	log.Println("new message")
 	if msgid, err := b.SendGroupMsg(GroupID, Msg); err != nil {
 		log.Println(err)
@@ -42,7 +42,7 @@ func justReply(MsgID int32, GroupID int64, UserID int64, Msg *message.Msg) bool 
 	return false
 }
 
-func justReply2(MsgID int32, UserID int64, msg *message.Msg) bool {
+func justReply2(MsgID int32, UserID int64, msg message.Msg) bool {
 	log.Println("new message")
 	if msgid, err := b.SendPrivateMsg(UserID, msg); err != nil {
 		log.Println(err)

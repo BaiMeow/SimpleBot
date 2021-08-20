@@ -39,9 +39,9 @@ func (u Image) getType() string {
 	return "image"
 }
 
-func (a *ArrayMessage) ToMsgStruct() *Msg {
+func (a ArrayMessage) ToMsgStruct() Msg {
 	var msg Msg
-	for _, v := range *a {
+	for _, v := range a {
 		switch v.Type {
 		case "text":
 			msg = append(msg, Text{
@@ -63,12 +63,12 @@ func (a *ArrayMessage) ToMsgStruct() *Msg {
 			})
 		}
 	}
-	return &msg
+	return msg
 }
 
-func (a *Msg) ToArrayMessage() *ArrayMessage {
+func (a Msg) ToArrayMessage() ArrayMessage {
 	var arrayMsg ArrayMessage
-	for _, v := range *a {
+	for _, v := range a {
 		switch v.getType() {
 		case "text":
 			tmp := v.(Text)
@@ -98,5 +98,5 @@ func (a *Msg) ToArrayMessage() *ArrayMessage {
 			})
 		}
 	}
-	return &arrayMsg
+	return arrayMsg
 }
