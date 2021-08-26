@@ -1,11 +1,15 @@
 package bot
 
 import (
+	"fmt"
 	"github.com/BaiMeow/SimpleBot/driver"
+	"log"
 	"sort"
 )
 
 type Bot struct {
+	//qq号
+	id     int64
 	driver driver.Driver
 
 	groupMsgListeners   *groupMsgHeap
@@ -26,9 +30,17 @@ func New(d driver.Driver) *Bot {
 
 func (b *Bot) Run() {
 	b.driver.Run()
-	for {
-		go handleEvent(b.driver.Read(), b)
+	go func() {
+		for {
+			go handleEvent(b.driver.Read(), b)
+		}
+	}()
+	id, nickname, err := b.getLoginInfo()
+	if err != nil {
+		log.Fatalln("获取登陆号信息失败")
 	}
+	b.id = id
+	log.Println(fmt.Sprintf("已登陆到%s,qq号为%d", nickname, id))
 }
 
 func (b *Bot) Attach(a listener) {
@@ -77,4 +89,9 @@ func (b *Bot) Attach(a listener) {
 	defer b.listeners[pos].lock.Unlock()
 	b.listeners[pos].Push(&a)
 	sort.Sort(b.listeners[pos])
+}
+
+//GetID 获取当前登陆的qq号
+func (b *Bot) GetID() int64 {
+	return b.id
 }

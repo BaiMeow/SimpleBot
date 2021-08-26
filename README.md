@@ -56,13 +56,15 @@
 - [ ] set_group_special_title 设置群组专属头衔
 - [ ] set_friend_add_request 处理加好友请求
 - [x] set_group_add_request 处理加群请求／邀请
-- [ ] get_login_info 获取登录号信息
+- [x] get_login_info 获取登录号信息
 - [ ] get_friend_list 获取好友列表
 - [ ] get_group_info 获取群信息
 - [ ] get_group_list 获取群列表
 - [ ] get_group_member_info 获取群成员信息
 - [ ] get_group_member_list 获取群成员列表
 - [ ] get_image 获取图片
+
+> 获取登录号信息：登陆时自动获取，仅保存qq号
 
 ### 延后实现的API
 

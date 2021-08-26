@@ -2,11 +2,10 @@
 package main
 
 import (
-	"log"
-
 	"github.com/BaiMeow/SimpleBot/bot"
 	"github.com/BaiMeow/SimpleBot/driver"
 	"github.com/BaiMeow/SimpleBot/message"
+	"log"
 )
 
 const addr = "ws://localhost:6700"
@@ -28,7 +27,9 @@ func main() {
 		Priority: 1,
 		F:        agree,
 	})
+
 	b.Run()
+	select {}
 }
 
 //复读
@@ -37,7 +38,7 @@ func justReply(MsgID int32, GroupID int64, UserID int64, Msg message.Msg) bool {
 	if msgid, err := b.SendGroupMsg(GroupID, Msg); err != nil {
 		log.Println(err)
 	} else {
-		log.Panicln(msgid)
+		log.Println(msgid)
 	}
 	return false
 }
@@ -55,7 +56,7 @@ func justReply2(MsgID int32, UserID int64, msg message.Msg) bool {
 	); err != nil {
 		log.Println(err)
 	} else {
-		log.Panicln(msgid)
+		log.Println(msgid)
 	}
 	return false
 }

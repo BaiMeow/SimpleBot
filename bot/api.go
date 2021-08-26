@@ -3,26 +3,26 @@ package bot
 import (
 	"encoding/json"
 	"errors"
-
 	"github.com/BaiMeow/SimpleBot/message"
 	"github.com/google/uuid"
+	"log"
 )
 
 // ErrJsonUnmarshal json序列化中出错
 var ErrJsonUnmarshal = errors.New("JsonUnmarshalError")
 
-var waitReply = make(map[uuid.UUID]func([]byte, bool))
+var waitReply = make(map[string]func([]byte, bool))
 
 type preUnmarshalReply struct {
-	Echo    uuid.UUID `json:"echo"`
-	RetCode int       `json:"retcode"`
-	Status  string    `json:"status"`
+	Echo    string `json:"echo"`
+	RetCode int    `json:"retcode"`
+	Status  string `json:"status"`
 }
 
 type apiCallFramework struct {
 	Action string      `json:"action"`
 	Params interface{} `json:"params"`
-	Echo   uuid.UUID   `json:"echo"`
+	Echo   string      `json:"echo"`
 }
 
 type groupMsg struct {
@@ -44,7 +44,9 @@ type privateMsg struct {
 }
 
 type privateMsgReplyDetails struct {
-	MessageID int32 `json:"message_id"`
+	Data struct {
+		MessageID int32 `json:"message_id"`
+	} `json:"data"`
 }
 
 type groupAddOrInvite struct {
@@ -54,17 +56,32 @@ type groupAddOrInvite struct {
 	Reason  string `json:"reason"`
 }
 
+type loginInfoDetails struct {
+	Data struct {
+		UserID   int64  `json:"user_id"`
+		Nickname string `json:"nickname"`
+	} `json:"data"`
+}
+
 func handleAPIReply(data []byte) {
 	reply := new(preUnmarshalReply)
+	if err := json.Unmarshal(data, reply); err != nil && reply.Echo == "" {
+		return
+	}
+	ok := reply.Status == "ok"
+	//todo:改进错误处理
+	if !ok {
+		log.Println("onebot服务处理失败")
+	}
 	if waitReply[reply.Echo] != nil {
-		waitReply[reply.Echo](data, reply.Status == "ok")
+		waitReply[reply.Echo](data, ok)
 		delete(waitReply, reply.Echo)
 	}
 }
 
 //SendGroupMsg 发送群聊消息(不含匿名消息)
 func (b *Bot) SendGroupMsg(group int64, msg message.Msg) (int32, error) {
-	id := uuid.New()
+	id := uuid.New().String()
 	bytes, err := json.Marshal(&apiCallFramework{
 		Action: "send_group_msg",
 		Params: groupMsg{
@@ -86,6 +103,7 @@ func (b *Bot) SendGroupMsg(group int64, msg message.Msg) (int32, error) {
 		}
 		details := new(groupMsgReplyDetails)
 		if err := json.Unmarshal(data, &details); err != nil {
+			log.Println(err)
 			msgID <- 0
 			return
 		}
@@ -101,7 +119,7 @@ func (b *Bot) SendGroupMsg(group int64, msg message.Msg) (int32, error) {
 
 //SendPrivateMsg 发送私聊消息
 func (b *Bot) SendPrivateMsg(qq int64, msg message.Msg) (int32, error) {
-	id := uuid.New()
+	id := uuid.New().String()
 	bytes, err := json.Marshal(&apiCallFramework{
 		Action: "send_private_msg",
 		Params: privateMsg{
@@ -117,13 +135,17 @@ func (b *Bot) SendPrivateMsg(qq int64, msg message.Msg) (int32, error) {
 	msgID := make(chan int32, 1)
 	waitReply[id] = func(data []byte, ok bool) {
 		if !ok {
+
 			msgID <- 0
+			return
 		}
 		details := new(privateMsgReplyDetails)
 		if err := json.Unmarshal(data, details); err != nil {
+			log.Println(err)
 			msgID <- 0
+			return
 		}
-		msgID <- details.MessageID
+		msgID <- details.Data.MessageID
 	}
 	b.driver.Write(bytes)
 	recMsgID := <-msgID
@@ -171,4 +193,37 @@ func (b *Bot) respondGroupInvite(approve bool, flag, reason string) error {
 	}
 	b.driver.Write(bytes)
 	return nil
+}
+
+func (b *Bot) getLoginInfo() (int64, string, error) {
+	id := uuid.New().String()
+	bytes, err := json.Marshal(
+		&apiCallFramework{
+			Action: "get_login_info",
+			Params: nil,
+			Echo:   id,
+		})
+	if err != nil {
+		return 0, "", err
+	}
+	info := make(chan *loginInfoDetails, 1)
+	waitReply[id] = func(data []byte, ok bool) {
+		if !ok {
+			info <- nil
+			return
+		}
+		i := new(loginInfoDetails)
+		if err := json.Unmarshal(data, i); err != nil {
+			log.Println(err)
+			info <- nil
+			return
+		}
+		info <- i
+	}
+	b.driver.Write(bytes)
+	recInfo := <-info
+	if recInfo != nil {
+		return recInfo.Data.UserID, recInfo.Data.Nickname, nil
+	}
+	return 0, "", ErrJsonUnmarshal
 }
