@@ -41,7 +41,7 @@ type privateEventFull struct {
 	} `json:"sender"`
 }
 
-type groupAddEventFull struct {
+type groupReqEventFull struct {
 	Time    int64  `json:"time"`
 	SelfID  int64  `json:"self_id"`
 	GroupID int64  `json:"group_id"`

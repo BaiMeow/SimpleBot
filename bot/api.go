@@ -152,3 +152,23 @@ func (b *Bot) respondGroupAdd(approve bool, flag, reason string) error {
 	b.driver.Write(bytes)
 	return nil
 }
+
+func (b *Bot) respondGroupInvite(approve bool, flag, reason string) error {
+	if approve {
+		reason = ""
+	}
+	bytes, err := json.Marshal(&apiCallFramework{
+		Action: "set_group_add_request",
+		Params: groupAddOrInvite{
+			Flag:    flag,
+			SubType: "invite",
+			Approve: approve,
+			Reason:  reason,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	b.driver.Write(bytes)
+	return nil
+}

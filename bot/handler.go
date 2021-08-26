@@ -19,7 +19,13 @@ type PrivateMsgHandler struct {
 //GroupAddHandler 处理加群申请
 type GroupAddHandler struct {
 	Priority int
-	F        func(request *GroupAddRequest) bool
+	F        func(request *GroupRequest) bool
+}
+
+//GroupInviteHandler 处理加群邀请
+type GroupInviteHandler struct {
+	Priority int
+	F        func(request *GroupRequest) bool
 }
 
 func (h *GroupMsgHandler) GetPriority() int {
@@ -31,5 +37,9 @@ func (h *PrivateMsgHandler) GetPriority() int {
 }
 
 func (h *GroupAddHandler) GetPriority() int {
+	return h.Priority
+}
+
+func (h *GroupInviteHandler) GetPriority() int {
 	return h.Priority
 }

@@ -57,6 +57,7 @@ func handleEvent(data []byte, b *Bot) {
 			case "add":
 				handleGroupAdd(data, b)
 			case "invite":
+				handleGroupInvite(data, b)
 			}
 		}
 	//不是Event那应该是api的回复
@@ -105,13 +106,13 @@ func handleGroupAdd(data []byte, b *Bot) {
 		return
 	}
 	listeners := b.listeners["request.group.add"]
-	ev := new(groupAddEventFull)
+	ev := new(groupReqEventFull)
 	if err := json.Unmarshal(data, ev); err != nil {
 		log.Println(err)
 		return
 	}
-	req := GroupAddRequest{
-		handler: b.respondGroupAdd,
+	req := GroupRequest{
+		handle:  b.respondGroupAdd,
 		flag:    ev.Flag,
 		UserID:  ev.UserID,
 		GroupID: ev.GroupID,
@@ -119,6 +120,31 @@ func handleGroupAdd(data []byte, b *Bot) {
 	}
 	for _, v := range listeners.heap {
 		v := v.(*GroupAddHandler)
+		if v.F(&req) {
+			return
+		}
+	}
+}
+
+func handleGroupInvite(data []byte, b *Bot) {
+	if b.listeners["request.group.invite"] == nil {
+		return
+	}
+	listeners := b.listeners["request.group.invite"]
+	ev := new(groupReqEventFull)
+	if err := json.Unmarshal(data, ev); err != nil {
+		log.Println(err)
+		return
+	}
+	req := GroupRequest{
+		handle:  b.respondGroupInvite,
+		flag:    ev.Flag,
+		UserID:  ev.UserID,
+		GroupID: ev.GroupID,
+		Comment: ev.Comment,
+	}
+	for _, v := range listeners.heap {
+		v := v.(*GroupInviteHandler)
 		if v.F(&req) {
 			return
 		}

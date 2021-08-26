@@ -61,6 +61,10 @@ func (b *Bot) Attach(a listener) {
 		b.privateMsgListeners.Push(a)
 		sort.Sort(b.privateMsgListeners)
 		return
+	case *GroupAddHandler:
+		pos = "request.group.add"
+	case *GroupInviteHandler:
+		pos = "request.group.invite"
 	}
 	//其他信息
 	if b.listeners[pos] == nil {

@@ -21,7 +21,7 @@
 - [ ] notice.notify.poke 戳一戳
 - [ ] request.friend 加好友请求
 - [x] request.group.add 他人加群请求
-- [ ] request.group.invite 收到加群邀请
+- [x] request.group.invite 收到加群邀请
 
 ### 延后实现的事件
 

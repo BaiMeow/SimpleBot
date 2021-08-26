@@ -60,7 +60,7 @@ func justReply2(MsgID int32, UserID int64, msg message.Msg) bool {
 	return false
 }
 
-func agree(request *bot.GroupAddRequest) bool {
+func agree(request *bot.GroupRequest) bool {
 	log.Println(request)
 	request.Agree()
 	return true
