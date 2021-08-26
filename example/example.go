@@ -6,7 +6,6 @@ import (
 
 	"github.com/BaiMeow/SimpleBot/bot"
 	"github.com/BaiMeow/SimpleBot/driver"
-	"github.com/BaiMeow/SimpleBot/handler"
 	"github.com/BaiMeow/SimpleBot/message"
 )
 
@@ -17,15 +16,15 @@ var b *bot.Bot
 
 func main() {
 	b = bot.New(driver.NewWsDriver(addr, token))
-	b.Attach(&handler.GroupMsgHandler{
+	b.Attach(&bot.GroupMsgHandler{
 		Priority: 1,
 		F:        justReply,
 	})
-	b.Attach(&handler.PrivateMsgHandler{
+	b.Attach(&bot.PrivateMsgHandler{
 		Priority: 1,
 		F:        justReply2,
 	})
-	b.Attach(&handler.GroupAddHandler{
+	b.Attach(&bot.GroupAddHandler{
 		Priority: 1,
 		F:        agree,
 	})
@@ -61,10 +60,8 @@ func justReply2(MsgID int32, UserID int64, msg message.Msg) bool {
 	return false
 }
 
-func agree(GroupID, UserID int64, comment, flag string) bool {
-	log.Println(UserID)
-	if err := b.RespondGroupAdd(true, flag, ""); err != nil {
-		return false
-	}
+func agree(request *bot.GroupAddRequest) bool {
+	log.Println(request)
+	request.Agree()
 	return true
 }

@@ -133,8 +133,7 @@ func (b *Bot) SendPrivateMsg(qq int64, msg message.Msg) (int32, error) {
 	return recMsgID, nil
 }
 
-//RespondGroupAdd 回应加群申请,reason仅在拒绝申请时填写。flag没什么特别的意思，相当于id。
-func (b *Bot) RespondGroupAdd(approve bool, flag, reason string) error {
+func (b *Bot) respondGroupAdd(approve bool, flag, reason string) error {
 	if approve {
 		reason = ""
 	}

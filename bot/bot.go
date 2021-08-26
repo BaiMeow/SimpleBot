@@ -2,7 +2,6 @@ package bot
 
 import (
 	"github.com/BaiMeow/SimpleBot/driver"
-	"github.com/BaiMeow/SimpleBot/handler"
 	"sort"
 )
 
@@ -36,11 +35,11 @@ func (b *Bot) Attach(a listener) {
 	var pos string
 	//单独处理群消息和私聊消息
 	switch a.(type) {
-	case *handler.GroupMsgHandler:
-		a := a.(*handler.GroupMsgHandler)
+	case *GroupMsgHandler:
+		a := a.(*GroupMsgHandler)
 		if b.groupMsgListeners == nil {
 			b.groupMsgListeners = &groupMsgHeap{
-				heap: []handler.GroupMsgHandler{*a},
+				heap: []GroupMsgHandler{*a},
 			}
 			return
 		}
@@ -49,11 +48,11 @@ func (b *Bot) Attach(a listener) {
 		b.groupMsgListeners.Push(a)
 		sort.Sort(b.groupMsgListeners)
 		return
-	case *handler.PrivateMsgHandler:
-		a := a.(*handler.PrivateMsgHandler)
+	case *PrivateMsgHandler:
+		a := a.(*PrivateMsgHandler)
 		if b.privateMsgListeners == nil {
 			b.privateMsgListeners = &privateMsgHeap{
-				heap: []handler.PrivateMsgHandler{*a},
+				heap: []PrivateMsgHandler{*a},
 			}
 			return
 		}

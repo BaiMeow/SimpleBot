@@ -1,6 +1,8 @@
-package handler
+package bot
 
-import "github.com/BaiMeow/SimpleBot/message"
+import (
+	"github.com/BaiMeow/SimpleBot/message"
+)
 
 //GroupMsgHandler 接收处理群聊消息（不含匿名消息）
 type GroupMsgHandler struct {
@@ -17,7 +19,7 @@ type PrivateMsgHandler struct {
 //GroupAddHandler 处理加群申请
 type GroupAddHandler struct {
 	Priority int
-	F        func(GroupID, UserID int64, comment, flag string) bool
+	F        func(request *GroupAddRequest) bool
 }
 
 func (h *GroupMsgHandler) GetPriority() int {

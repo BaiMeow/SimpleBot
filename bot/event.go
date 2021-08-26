@@ -2,7 +2,6 @@ package bot
 
 import (
 	"encoding/json"
-	"github.com/BaiMeow/SimpleBot/handler"
 	"log"
 )
 
@@ -111,9 +110,16 @@ func handleGroupAdd(data []byte, b *Bot) {
 		log.Println(err)
 		return
 	}
+	req := GroupAddRequest{
+		handler: b.respondGroupAdd,
+		flag:    ev.Flag,
+		UserID:  ev.UserID,
+		GroupID: ev.GroupID,
+		Comment: ev.Comment,
+	}
 	for _, v := range listeners.heap {
-		v := v.(*handler.GroupAddHandler)
-		if v.F(ev.GroupID, ev.UserID, ev.Comment, ev.Flag) {
+		v := v.(*GroupAddHandler)
+		if v.F(&req) {
 			return
 		}
 	}

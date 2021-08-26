@@ -1,17 +1,16 @@
 package bot
 
 import (
-	"github.com/BaiMeow/SimpleBot/handler"
 	"sync"
 )
 
 type groupMsgHeap struct {
-	heap []handler.GroupMsgHandler
+	heap []GroupMsgHandler
 	lock sync.Locker
 }
 
 type privateMsgHeap struct {
-	heap []handler.PrivateMsgHandler
+	heap []PrivateMsgHandler
 	lock sync.Locker
 }
 
@@ -44,7 +43,7 @@ func (h *groupMsgHeap) Swap(i, j int) {
 	defer h.lock.Unlock()
 	h.heap[i], h.heap[j] = h.heap[j], h.heap[i]
 }
-func (h *groupMsgHeap) Push(l *handler.GroupMsgHandler) {
+func (h *groupMsgHeap) Push(l *GroupMsgHandler) {
 	h.heap = append(h.heap, *l)
 }
 
@@ -57,6 +56,6 @@ func (h *privateMsgHeap) Swap(i, j int) {
 	defer h.lock.Unlock()
 	h.heap[i], h.heap[j] = h.heap[j], h.heap[i]
 }
-func (h *privateMsgHeap) Push(l *handler.PrivateMsgHandler) {
+func (h *privateMsgHeap) Push(l *PrivateMsgHandler) {
 	h.heap = append(h.heap, *l)
 }
