@@ -8,9 +8,9 @@
 
 - [x] message.group.normal 群聊
 - [x] message.private.friend 私聊
-- [ ] notice.group_decrease.leave 群员自主退群
-- [ ] notice.group_decrease.kick 群员被踢
-- [ ] notice.group_decrease.kick_me 自己被踢
+- [x] notice.group_decrease.leave 群员自主退群
+- [x] notice.group_decrease.kick 群员被踢
+- [x] notice.group_decrease.kick_me 自己被踢
 - [ ] notice.group_increase.approve 群员被同意进群
 - [ ] notice.group_increase.invite 群员被邀请进群
 - [ ] notice.group_ban.ban 群禁言

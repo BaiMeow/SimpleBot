@@ -49,7 +49,10 @@ func handleEvent(data []byte, b *Bot) {
 
 		}
 	case "notice":
-
+		switch preload.NoticeType {
+		case "group_decrease":
+			handleGroupDecrease(data, b)
+		}
 	case "request":
 		switch preload.RequestType {
 		case "group":
@@ -146,6 +149,24 @@ func handleGroupInvite(data []byte, b *Bot) {
 	for _, v := range listeners.heap {
 		v := v.(*GroupInviteHandler)
 		if v.F(&req) {
+			return
+		}
+	}
+}
+
+func handleGroupDecrease(data []byte, b *Bot) {
+	if b.listeners["notice.group_decrease"] == nil {
+		return
+	}
+	listener := b.listeners["notice.group_decrease"]
+	ev := new(groupDecreaseFull)
+	if err := json.Unmarshal(data, ev); err != nil {
+		log.Println(err)
+		return
+	}
+	for _, v := range listener.heap {
+		v := v.(*GroupDecreaseHandler)
+		if v.F(ev.GroupID, ev.OperatorID, ev.UserID) {
 			return
 		}
 	}

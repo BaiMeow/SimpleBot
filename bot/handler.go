@@ -28,6 +28,16 @@ type GroupInviteHandler struct {
 	F        func(request *GroupRequest) bool
 }
 
+//GroupDecreaseHandler 群成员减少,包含成员主动退群，成员被踢，自己被踢;
+//主动退群时OperatorID==UserID;
+//自己被踢UserID==b.getID();
+//成员被踢时!(OperatorID==UserID||UserID==b.getID();
+//请自行判断;
+type GroupDecreaseHandler struct {
+	Priority int
+	F        func(GroupID, OperatorID, UserID int64) bool
+}
+
 func (h *GroupMsgHandler) GetPriority() int {
 	return h.Priority
 }
@@ -41,5 +51,9 @@ func (h *GroupAddHandler) GetPriority() int {
 }
 
 func (h *GroupInviteHandler) GetPriority() int {
+	return h.Priority
+}
+
+func (h *GroupDecreaseHandler) GetPriority() int {
 	return h.Priority
 }

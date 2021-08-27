@@ -27,6 +27,10 @@ func main() {
 		Priority: 1,
 		F:        agree,
 	})
+	b.Attach(&bot.GroupDecreaseHandler{
+		Priority: 1,
+		F:        groupdecrease,
+	})
 
 	b.Run()
 	select {}
@@ -64,5 +68,10 @@ func justReply2(MsgID int32, UserID int64, msg message.Msg) bool {
 func agree(request *bot.GroupRequest) bool {
 	log.Println(request)
 	request.Agree()
+	return true
+}
+
+func groupdecrease(GroupID, OperatorID, UserID int64) bool {
+	log.Println("-1s:", GroupID, OperatorID, UserID)
 	return true
 }

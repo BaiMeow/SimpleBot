@@ -50,6 +50,15 @@ type groupReqEventFull struct {
 	Flag    string `json:"flag"`
 }
 
+type groupDecreaseFull struct {
+	Time       int64  `json:"time"`
+	SelfID     int64  `json:"self_id"`
+	GroupID    int64  `json:"group_id"`
+	OperatorID int64  `json:"operator_id"`
+	UserID     int64  `json:"user_id"`
+	SubType    string `json:"sub_type"`
+}
+
 func (f *groupEventFull) getMessage() *message.ArrayMessage {
 	return &f.Message
 }
