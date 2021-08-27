@@ -1,5 +1,7 @@
 package message
 
+import "strconv"
+
 type ArrayMessage []arrayMessageUnit
 
 type arrayMessageUnit struct {
@@ -19,13 +21,18 @@ type Text struct {
 }
 
 type Face struct {
-	id string
+	ID string
 }
 type Image struct {
 	//发送时，file 参数可选已接受文件文件名，URL，base64编码
 	File string
 	Type string
 	URL  string
+}
+
+type At struct {
+	//ID 为qq号，ID为all时表示@全体成员
+	ID string
 }
 
 func (u Text) GetType() string {
@@ -40,6 +47,21 @@ func (u Image) GetType() string {
 	return "image"
 }
 
+func (u At) GetType() string {
+	return "at"
+}
+
+func (u At) IsAt(id interface{}) bool {
+	switch id.(type) {
+	case string:
+		return id.(string) == u.ID
+	case int64:
+		return strconv.FormatInt(id.(int64), 10) == u.ID
+
+	}
+	return false
+}
+
 func (a ArrayMessage) ToMsgStruct() Msg {
 	var msg Msg
 	for _, v := range a {
@@ -50,7 +72,7 @@ func (a ArrayMessage) ToMsgStruct() Msg {
 			})
 		case "face":
 			msg = append(msg, Face{
-				id: v.Data["id"].(string),
+				ID: v.Data["id"].(string),
 			})
 		case "image":
 			kind, ok := v.Data["type"].(string)
@@ -61,6 +83,10 @@ func (a ArrayMessage) ToMsgStruct() Msg {
 				File: v.Data["file"].(string),
 				Type: kind,
 				URL:  v.Data["url"].(string),
+			})
+		case "at":
+			msg = append(msg, At{
+				ID: v.Data["qq"].(string),
 			})
 		}
 	}
@@ -84,7 +110,7 @@ func (msg Msg) ToArrayMessage() ArrayMessage {
 			arrayMsg = append(arrayMsg, arrayMessageUnit{
 				Type: "face",
 				Data: map[string]interface{}{
-					"id": tmp.id,
+					"id": tmp.ID,
 				},
 			})
 		case "image":
@@ -95,6 +121,14 @@ func (msg Msg) ToArrayMessage() ArrayMessage {
 					"file": tmp.File,
 					"type": tmp.Type,
 					"url":  tmp.URL,
+				},
+			})
+		case "at":
+			tmp := v.(At)
+			arrayMsg = append(arrayMsg, arrayMessageUnit{
+				Type: "at",
+				Data: map[string]interface{}{
+					"qq": tmp.ID,
 				},
 			})
 		}
