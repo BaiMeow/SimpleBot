@@ -34,7 +34,9 @@ func (d *wsDriver) Run() {
 }
 
 func (d *wsDriver) Write(data []byte) {
-	d.conn.WriteMessage(websocket.TextMessage, data)
+	if err := d.conn.WriteMessage(websocket.TextMessage, data); err != nil {
+		log.Fatal(err)
+	}
 }
 func (d *wsDriver) Read() []byte {
 	_, p, err := d.conn.ReadMessage()

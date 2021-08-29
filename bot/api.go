@@ -65,16 +65,23 @@ type loginInfoDetails struct {
 
 func handleAPIReply(data []byte) {
 	reply := new(preUnmarshalReply)
-	if err := json.Unmarshal(data, reply); err != nil && reply.Echo == "" {
+	if err := json.Unmarshal(data, reply); err != nil {
+		log.Println(err)
+	}
+	if reply.Echo == "" {
+		log.Println("未知的api响应")
 		return
 	}
-	ok := reply.Status == "ok"
-	//todo:改进错误处理
-	if !ok {
+	if reply.Status != "ok" {
 		log.Println("onebot服务处理失败")
+		if waitReply[reply.Echo] != nil {
+			waitReply[reply.Echo](data, false)
+			delete(waitReply, reply.Echo)
+		}
+		return
 	}
 	if waitReply[reply.Echo] != nil {
-		waitReply[reply.Echo](data, ok)
+		waitReply[reply.Echo](data, true)
 		delete(waitReply, reply.Echo)
 	}
 }
@@ -135,7 +142,6 @@ func (b *Bot) SendPrivateMsg(qq int64, msg message.Msg) (int32, error) {
 	msgID := make(chan int32, 1)
 	waitReply[id] = func(data []byte, ok bool) {
 		if !ok {
-
 			msgID <- 0
 			return
 		}
