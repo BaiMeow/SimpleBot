@@ -128,6 +128,10 @@
 
 目前采用正向websocket，今后可能会添加其他连接方式
 
+## 示例
+
+另见[example/](https://github.com/BaiMeow/SimpleBot/tree/main/example)
+
 ## 应用案例
 
 - mc服务器综合管理SiS https://github.com/miaoscraft/SiS/tree/SimpleBot_Base
