@@ -1,4 +1,3 @@
-//main.go暂时作为示例和调试使用
 package main
 
 import (
