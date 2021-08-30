@@ -12,7 +12,7 @@ type arrayMessageUnit struct {
 type Msg []msgUnit
 
 type msgUnit interface {
-	// GetType 返回消息类型
+	// GetType 返回消息类型,
 	// 现已支持 text image face at
 	GetType() string
 }
