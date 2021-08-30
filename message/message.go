@@ -1,6 +1,9 @@
 package message
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
 type ArrayMessage []arrayMessageUnit
 
@@ -9,6 +12,7 @@ type arrayMessageUnit struct {
 	Data map[string]interface{} `json:"data"`
 }
 
+// Msg 消息，是消息段的切片
 type Msg []msgUnit
 
 type msgUnit interface {
@@ -138,4 +142,21 @@ func (msg Msg) ToArrayMessage() ArrayMessage {
 		}
 	}
 	return arrayMsg
+}
+
+//Fields 将text消息以空格分割符划分成多个，顺序不变，并且保留其他特殊消息类型，建议用于命令解析的预处理
+func (msg Msg) Fields() Msg {
+	var newMsg Msg
+	for _, unit := range msg {
+		if unit.GetType() != "text" {
+			newMsg = append(newMsg, unit)
+			continue
+		}
+		txt := unit.(Text)
+		args := strings.Fields(txt.Text)
+		for _, arg := range args {
+			newMsg = append(newMsg, Text{Text: arg})
+		}
+	}
+	return newMsg
 }
