@@ -12,7 +12,8 @@ type arrayMessageUnit struct {
 type Msg []msgUnit
 
 type msgUnit interface {
-	//GetType 返回 text face image
+	// GetType 返回消息类型
+	// 现已支持 text image face at
 	GetType() string
 }
 
@@ -24,14 +25,14 @@ type Face struct {
 	ID string
 }
 type Image struct {
-	//发送时，file 参数可选已接受文件文件名，URL，base64编码
+	// 发送时，file 参数可选已接受文件文件名，URL，base64编码
 	File string
 	Type string
 	URL  string
 }
 
 type At struct {
-	//ID 为qq号，ID为all时表示@全体成员
+	// ID 为qq号，ID为all时表示@全体成员
 	ID string
 }
 
@@ -51,6 +52,7 @@ func (u At) GetType() string {
 	return "at"
 }
 
+// IsAt 判断时候在@某人，支持int64和string，可以传入"all"表示@全体
 func (u At) IsAt(id interface{}) bool {
 	switch id.(type) {
 	case string:
@@ -62,6 +64,7 @@ func (u At) IsAt(id interface{}) bool {
 	return false
 }
 
+// ToMsgStruct 将map数组消息转为结构体数组格式，一般不要使用
 func (a ArrayMessage) ToMsgStruct() Msg {
 	var msg Msg
 	for _, v := range a {
@@ -93,6 +96,7 @@ func (a ArrayMessage) ToMsgStruct() Msg {
 	return msg
 }
 
+// ToArrayMessage 将结构体数组消息转为map数组，一般不要使用
 func (msg Msg) ToArrayMessage() ArrayMessage {
 	var arrayMsg ArrayMessage
 	for _, v := range msg {

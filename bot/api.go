@@ -86,7 +86,7 @@ func handleAPIReply(data []byte) {
 	}
 }
 
-//SendGroupMsg 发送群聊消息(不含匿名消息)
+// SendGroupMsg 发送群聊消息(不含匿名消息)
 func (b *Bot) SendGroupMsg(group int64, msg message.Msg) (int32, error) {
 	id := uuid.New().String()
 	bytes, err := json.Marshal(&apiCallFramework{
@@ -124,7 +124,7 @@ func (b *Bot) SendGroupMsg(group int64, msg message.Msg) (int32, error) {
 	return recMsgID, nil
 }
 
-//SendPrivateMsg 发送私聊消息
+// SendPrivateMsg 发送私聊消息
 func (b *Bot) SendPrivateMsg(qq int64, msg message.Msg) (int32, error) {
 	id := uuid.New().String()
 	bytes, err := json.Marshal(&apiCallFramework{

@@ -2,7 +2,6 @@ package bot
 
 import "github.com/BaiMeow/SimpleBot/message"
 
-//虽然mirai传了一堆参数，但是用得到的毕竟是少数
 type groupEventFull struct {
 	Time      int64 `json:"time"`
 	SelfID    int64 `json:"self_id"`

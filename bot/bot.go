@@ -8,7 +8,7 @@ import (
 )
 
 type Bot struct {
-	//qq号
+	// qq号
 	id     int64
 	driver driver.Driver
 
@@ -45,7 +45,7 @@ func (b *Bot) Run() {
 
 func (b *Bot) Attach(a listener) {
 	var pos string
-	//单独处理群消息和私聊消息
+	// 单独处理群消息和私聊消息
 	switch a.(type) {
 	case *GroupMsgHandler:
 		a := a.(*GroupMsgHandler)
@@ -80,7 +80,7 @@ func (b *Bot) Attach(a listener) {
 	case *GroupDecreaseHandler:
 		pos = "notice.group_decrease"
 	}
-	//其他信息
+	// 其他信息
 	if b.listeners[pos] == nil {
 		b.listeners[pos] = &listenerHeap{
 			heap: []listener{a},
@@ -93,7 +93,7 @@ func (b *Bot) Attach(a listener) {
 	sort.Sort(b.listeners[pos])
 }
 
-//GetID 获取当前登陆的qq号
+// GetID 获取当前登陆的qq号
 func (b *Bot) GetID() int64 {
 	return b.id
 }
