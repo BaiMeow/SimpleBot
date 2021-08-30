@@ -38,22 +38,22 @@ type GroupDecreaseHandler struct {
 	F        func(GroupID, OperatorID, UserID int64) bool
 }
 
-func (h *GroupMsgHandler) GetPriority() int {
+func (h *GroupMsgHandler) getPriority() int {
 	return h.Priority
 }
 
-func (h *PrivateMsgHandler) GetPriority() int {
+func (h *PrivateMsgHandler) getPriority() int {
 	return h.Priority
 }
 
-func (h *GroupAddHandler) GetPriority() int {
+func (h *GroupAddHandler) getPriority() int {
 	return h.Priority
 }
 
-func (h *GroupInviteHandler) GetPriority() int {
+func (h *GroupInviteHandler) getPriority() int {
 	return h.Priority
 }
 
-func (h *GroupDecreaseHandler) GetPriority() int {
+func (h *GroupDecreaseHandler) getPriority() int {
 	return h.Priority
 }

@@ -1,6 +1,7 @@
 # SimpleBot
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/BaiMeow/SimpleBot)](https://goreportcard.com/report/github.com/BaiMeow/SimpleBot)
+[![Go Reference](https://pkg.go.dev/badge/github.com/BaiMeow/SimpleBot.svg)](https://pkg.go.dev/github.com/BaiMeow/SimpleBot)
 
 力求简单简洁，为小项目的开发提供支持的Golang onebot SDK
 

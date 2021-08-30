@@ -18,7 +18,7 @@ type Bot struct {
 }
 
 type listener interface {
-	GetPriority() int
+	getPriority() int
 }
 
 func New(d driver.Driver) *Bot {
