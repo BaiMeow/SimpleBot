@@ -6,12 +6,12 @@ import (
 
 type groupMsgHeap struct {
 	heap []GroupMsgHandler
-	lock sync.Locker
+	lock sync.Mutex
 }
 
 type privateMsgHeap struct {
 	heap []PrivateMsgHandler
-	lock sync.Locker
+	lock sync.Mutex
 }
 
 type listenerHeap struct {

@@ -5,6 +5,7 @@ import (
 	"github.com/BaiMeow/SimpleBot/driver"
 	"log"
 	"sort"
+	"sync"
 )
 
 type Bot struct {
@@ -52,6 +53,7 @@ func (b *Bot) Attach(a listener) {
 		if b.groupMsgListeners == nil {
 			b.groupMsgListeners = &groupMsgHeap{
 				heap: []GroupMsgHandler{*a},
+				lock: sync.Mutex{},
 			}
 			return
 		}
@@ -65,6 +67,7 @@ func (b *Bot) Attach(a listener) {
 		if b.privateMsgListeners == nil {
 			b.privateMsgListeners = &privateMsgHeap{
 				heap: []PrivateMsgHandler{*a},
+				lock: sync.Mutex{},
 			}
 			return
 		}
@@ -87,6 +90,7 @@ func (b *Bot) Attach(a listener) {
 	if b.listeners[pos] == nil {
 		b.listeners[pos] = &listenerHeap{
 			heap: []listener{a},
+			lock: sync.Mutex{},
 		}
 		return
 	}
