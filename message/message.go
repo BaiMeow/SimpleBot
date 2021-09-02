@@ -82,15 +82,19 @@ func (a ArrayMessage) ToMsgStruct() Msg {
 				ID: v.Data["id"].(string),
 			})
 		case "image":
-			kind, ok := v.Data["type"].(string)
-			if !ok {
-				kind = ""
-			}
-			msg = append(msg, Image{
+			newImage := Image{
 				File: v.Data["file"].(string),
-				Type: kind,
-				URL:  v.Data["url"].(string),
-			})
+			}
+			//type字段可能为nil
+			if kind, ok := v.Data["type"].(string); ok {
+				newImage.Type = kind
+
+			}
+			//url字段可能为nil
+			if url, ok := v.Data["url"].(string); ok {
+				newImage.URL = url
+			}
+			msg = append(msg, newImage)
 		case "at":
 			msg = append(msg, At{
 				ID: v.Data["qq"].(string),
