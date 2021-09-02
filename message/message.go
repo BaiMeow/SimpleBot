@@ -63,7 +63,6 @@ func (u At) IsAt(id interface{}) bool {
 		return id.(string) == u.ID
 	case int64:
 		return strconv.FormatInt(id.(int64), 10) == u.ID
-
 	}
 	return false
 }
@@ -74,31 +73,36 @@ func (a ArrayMessage) ToMsgStruct() Msg {
 	for _, v := range a {
 		switch v.Type {
 		case "text":
-			msg = append(msg, Text{
-				Text: v.Data["text"].(string),
-			})
-		case "face":
-			msg = append(msg, Face{
-				ID: v.Data["id"].(string),
-			})
-		case "image":
-			newImage := Image{
-				File: v.Data["file"].(string),
+			var newText Text
+			if text, ok := v.Data["text"].(string); ok {
+				newText.Text = text
 			}
-			//type字段可能为nil
+			msg = append(msg, newText)
+		case "face":
+			var newFace Face
+			if id, ok := v.Data["id"].(string); ok {
+				newFace.ID = id
+			}
+			msg = append(msg, newFace)
+		case "image":
+			var newImage Image
+			if file, ok := v.Data["file"].(string); ok {
+				newImage.File = file
+			}
 			if kind, ok := v.Data["type"].(string); ok {
 				newImage.Type = kind
 
 			}
-			//url字段可能为nil
 			if url, ok := v.Data["url"].(string); ok {
 				newImage.URL = url
 			}
 			msg = append(msg, newImage)
 		case "at":
-			msg = append(msg, At{
-				ID: v.Data["qq"].(string),
-			})
+			var newAt At
+			if qq, ok := v.Data["qq"].(string); ok {
+				newAt.ID = qq
+			}
+			msg = append(msg, newAt)
 		}
 	}
 	return msg
