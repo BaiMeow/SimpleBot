@@ -34,15 +34,24 @@ func (d *wsDriver) Run() {
 }
 
 func (d *wsDriver) Write(data []byte) {
-	if err := d.conn.WriteMessage(websocket.TextMessage, data); err != nil {
-		log.Fatal(err)
+	for {
+		if err := d.conn.WriteMessage(websocket.TextMessage, data); err != nil {
+			log.Printf("无法将消息发送到onebot:%v", err)
+			d.Run()
+			continue
+		}
+		return
 	}
 }
 func (d *wsDriver) Read() []byte {
-	_, p, err := d.conn.ReadMessage()
-	if err != nil {
-		log.Fatal(err)
+	for {
+		_, p, err := d.conn.ReadMessage()
+		if err != nil {
+			log.Printf("无法从onebot拉取消息:%v", err)
+			d.Run()
+			continue
+		}
+		return p
 	}
-	return p
 }
 func (d *wsDriver) Stop() {}
