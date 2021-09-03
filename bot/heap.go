@@ -23,7 +23,7 @@ type listenerHeap struct {
 
 func (h *listenerHeap) Len() int { return len(h.heap) }
 func (h *listenerHeap) Less(i, j int) bool {
-	return h.heap[i].getPriority() < h.heap[j].getPriority()
+	return h.heap[i].getPriority() > h.heap[j].getPriority()
 }
 func (h *listenerHeap) Swap(i, j int) {
 	h.lock.Lock()
@@ -36,7 +36,7 @@ func (h *listenerHeap) Push(l *listener) {
 
 func (h *groupMsgHeap) Len() int { return len(h.heap) }
 func (h *groupMsgHeap) Less(i, j int) bool {
-	return h.heap[i].getPriority() < h.heap[j].getPriority()
+	return h.heap[i].getPriority() > h.heap[j].getPriority()
 }
 func (h *groupMsgHeap) Swap(i, j int) {
 	h.lock.Lock()
@@ -49,7 +49,7 @@ func (h *groupMsgHeap) Push(l *GroupMsgHandler) {
 
 func (h *privateMsgHeap) Len() int { return len(h.heap) }
 func (h *privateMsgHeap) Less(i, j int) bool {
-	return h.heap[i].getPriority() < h.heap[j].getPriority()
+	return h.heap[i].getPriority() > h.heap[j].getPriority()
 }
 func (h *privateMsgHeap) Swap(i, j int) {
 	h.lock.Lock()
