@@ -33,7 +33,7 @@ func CQstrToArrayMessage(str string) *ArrayMessage {
 		if v[0] != '[' {
 			msg = append(msg, arrayMessageUnit{
 				Type: "text",
-				Data: map[string]interface{}{
+				Data: map[string]string{
 					"text": replacer.Replace(v),
 				},
 			})
@@ -44,7 +44,7 @@ func CQstrToArrayMessage(str string) *ArrayMessage {
 		args := strings.Split(v, ",")
 		var unit arrayMessageUnit
 		unit.Type = args[0][3:]
-		unit.Data = make(map[string]interface{})
+		unit.Data = make(map[string]string)
 		for _, v := range args {
 			field := strings.SplitN(v, "=", 2)
 			if len(field) != 2 {

@@ -8,8 +8,8 @@ import (
 type ArrayMessage []arrayMessageUnit
 
 type arrayMessageUnit struct {
-	Type string                 `json:"type"`
-	Data map[string]interface{} `json:"data"`
+	Type string            `json:"type"`
+	Data map[string]string `json:"data"`
 }
 
 // Msg 消息，是消息段的切片
@@ -17,7 +17,7 @@ type Msg []msgUnit
 
 type msgUnit interface {
 	// GetType 返回消息类型,
-	// 现已支持 text image face at
+	// 现已支持 text image face at share group_contact user_contact
 	GetType() string
 }
 
@@ -40,6 +40,26 @@ type At struct {
 	ID string
 }
 
+//Share 链接分享
+type Share struct {
+	URL   string
+	Title string
+	//发送时可选，内容描述
+	Content string
+	//发送时可选，图片URL，部分onebot实现不一定有效
+	Image string
+}
+
+//UserContact 推荐好友
+type UserContact struct {
+	ID int64
+}
+
+//GroupContact 推荐群
+type GroupContact struct {
+	ID int64
+}
+
 func (u Text) GetType() string {
 	return "text"
 }
@@ -54,6 +74,18 @@ func (u Image) GetType() string {
 
 func (u At) GetType() string {
 	return "at"
+}
+
+func (u Share) GetType() string {
+	return "share"
+}
+
+func (u UserContact) GetType() string {
+	return "user_contact"
+}
+
+func (u GroupContact) GetType() string {
+	return "group_contact"
 }
 
 // IsAt 判断时候在@某人，支持int64和string，可以传入"all"表示@全体
@@ -73,36 +105,35 @@ func (a ArrayMessage) ToMsgStruct() Msg {
 	for _, v := range a {
 		switch v.Type {
 		case "text":
-			var newText Text
-			if text, ok := v.Data["text"].(string); ok {
-				newText.Text = text
-			}
-			msg = append(msg, newText)
+			msg = append(msg, Text{Text: v.Data["text"]})
 		case "face":
-			var newFace Face
-			if id, ok := v.Data["id"].(string); ok {
-				newFace.ID = id
-			}
-			msg = append(msg, newFace)
+			msg = append(msg, Face{ID: v.Data["id"]})
 		case "image":
-			var newImage Image
-			if file, ok := v.Data["file"].(string); ok {
-				newImage.File = file
-			}
-			if kind, ok := v.Data["type"].(string); ok {
-				newImage.Type = kind
-
-			}
-			if url, ok := v.Data["url"].(string); ok {
-				newImage.URL = url
-			}
-			msg = append(msg, newImage)
+			msg = append(msg, Image{
+				File: v.Data["file"],
+				Type: v.Data["type"],
+				URL:  v.Data["url"],
+			})
 		case "at":
-			var newAt At
-			if qq, ok := v.Data["qq"].(string); ok {
-				newAt.ID = qq
+			msg = append(msg, At{ID: v.Data["qq"]})
+		case "share":
+			msg = append(msg, Share{
+				URL:     v.Data["url"],
+				Title:   v.Data["title"],
+				Content: v.Data["content"],
+				Image:   v.Data["image"],
+			})
+		case "contact":
+			id, err := strconv.ParseInt(v.Data["id"], 10, 64)
+			if err != nil {
+				continue
 			}
-			msg = append(msg, newAt)
+			switch v.Data["type"] {
+			case "qq":
+				msg = append(msg, UserContact{ID: id})
+			case "group":
+				msg = append(msg, GroupContact{ID: id})
+			}
 		}
 	}
 	return msg
@@ -117,7 +148,7 @@ func (msg Msg) ToArrayMessage() ArrayMessage {
 			tmp := v.(Text)
 			arrayMsg = append(arrayMsg, arrayMessageUnit{
 				Type: "text",
-				Data: map[string]interface{}{
+				Data: map[string]string{
 					"text": tmp.Text,
 				},
 			})
@@ -125,7 +156,7 @@ func (msg Msg) ToArrayMessage() ArrayMessage {
 			tmp := v.(Face)
 			arrayMsg = append(arrayMsg, arrayMessageUnit{
 				Type: "face",
-				Data: map[string]interface{}{
+				Data: map[string]string{
 					"id": tmp.ID,
 				},
 			})
@@ -133,7 +164,7 @@ func (msg Msg) ToArrayMessage() ArrayMessage {
 			tmp := v.(Image)
 			arrayMsg = append(arrayMsg, arrayMessageUnit{
 				Type: "image",
-				Data: map[string]interface{}{
+				Data: map[string]string{
 					"file": tmp.File,
 					"type": tmp.Type,
 					"url":  tmp.URL,
@@ -143,8 +174,37 @@ func (msg Msg) ToArrayMessage() ArrayMessage {
 			tmp := v.(At)
 			arrayMsg = append(arrayMsg, arrayMessageUnit{
 				Type: "at",
-				Data: map[string]interface{}{
+				Data: map[string]string{
 					"qq": tmp.ID,
+				},
+			})
+		case "share":
+			tmp := v.(Share)
+			arrayMsg = append(arrayMsg, arrayMessageUnit{
+				Type: "share",
+				Data: map[string]string{
+					"url":     tmp.URL,
+					"title":   tmp.Title,
+					"content": tmp.Content,
+					"image":   tmp.Image,
+				},
+			})
+		case "user_contact":
+			tmp := v.(UserContact)
+			arrayMsg = append(arrayMsg, arrayMessageUnit{
+				Type: "contact",
+				Data: map[string]string{
+					"type": "qq",
+					"id":   strconv.FormatInt(tmp.ID, 10),
+				},
+			})
+		case "group_contact":
+			tmp := v.(GroupContact)
+			arrayMsg = append(arrayMsg, arrayMessageUnit{
+				Type: "contact",
+				Data: map[string]string{
+					"type": "group",
+					"id":   strconv.FormatInt(tmp.ID, 10),
 				},
 			})
 		}
