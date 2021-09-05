@@ -30,7 +30,7 @@ func CQstrToArrayMessage(str string) *ArrayMessage {
 	var msg ArrayMessage
 	for _, v := range section {
 		//不是cq码
-		if v[0] != '[' {
+		if len(v) < 6 || v[:4] != "[CQ:" {
 			msg = append(msg, arrayMessageUnit{
 				Type: "text",
 				Data: map[string]string{
