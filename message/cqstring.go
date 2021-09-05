@@ -34,7 +34,7 @@ func CQstrToArrayMessage(str string) *ArrayMessage {
 			msg = append(msg, arrayMessageUnit{
 				Type: "text",
 				Data: map[string]string{
-					"text": replacer.Replace(v),
+					"text": CQUnescape.Replace(v),
 				},
 			})
 			continue
@@ -50,15 +50,21 @@ func CQstrToArrayMessage(str string) *ArrayMessage {
 			if len(field) != 2 {
 				continue
 			}
-			unit.Data[replacer.Replace(field[0])] = replacer.Replace(field[1])
+			unit.Data[CQUnescape.Replace(field[0])] = CQUnescape.Replace(field[1])
 		}
 		msg = append(msg, unit)
 	}
 	return &msg
 }
 
-var replacer = strings.NewReplacer(
+var CQUnescape = strings.NewReplacer(
 	"&amp;", "&",
 	"&#91;", "[",
 	"&#93;", "]",
+)
+
+var CQEscape = strings.NewReplacer(
+	"&", "&amp;",
+	"[", "&#91;",
+	"]", "&#93;",
 )
