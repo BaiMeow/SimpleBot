@@ -26,8 +26,6 @@ func (h *listenerHeap) Less(i, j int) bool {
 	return h.heap[i].getPriority() > h.heap[j].getPriority()
 }
 func (h *listenerHeap) Swap(i, j int) {
-	h.lock.Lock()
-	defer h.lock.Unlock()
 	h.heap[i], h.heap[j] = h.heap[j], h.heap[i]
 }
 func (h *listenerHeap) Push(l *listener) {
@@ -39,8 +37,6 @@ func (h *groupMsgHeap) Less(i, j int) bool {
 	return h.heap[i].getPriority() > h.heap[j].getPriority()
 }
 func (h *groupMsgHeap) Swap(i, j int) {
-	h.lock.Lock()
-	defer h.lock.Unlock()
 	h.heap[i], h.heap[j] = h.heap[j], h.heap[i]
 }
 func (h *groupMsgHeap) Push(l *GroupMsgHandler) {
@@ -52,8 +48,6 @@ func (h *privateMsgHeap) Less(i, j int) bool {
 	return h.heap[i].getPriority() > h.heap[j].getPriority()
 }
 func (h *privateMsgHeap) Swap(i, j int) {
-	h.lock.Lock()
-	defer h.lock.Unlock()
 	h.heap[i], h.heap[j] = h.heap[j], h.heap[i]
 }
 func (h *privateMsgHeap) Push(l *PrivateMsgHandler) {
