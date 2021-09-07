@@ -60,6 +60,18 @@ type GroupContact struct {
 	ID int64
 }
 
+//Location 位置
+type Location struct {
+	Lat     float64
+	Lon     float64
+	Title   string
+	Content string
+}
+
+type Reply struct {
+	ID int32
+}
+
 func (u Text) GetType() string {
 	return "text"
 }
@@ -86,6 +98,14 @@ func (u UserContact) GetType() string {
 
 func (u GroupContact) GetType() string {
 	return "group_contact"
+}
+
+func (u Location) GetType() string {
+	return "location"
+}
+
+func (u Reply) GetType() string {
+	return "reply"
 }
 
 // IsAt 判断时候在@某人，支持int64和string，可以传入"all"表示@全体
@@ -134,6 +154,27 @@ func (a ArrayMessage) ToMsgStruct() Msg {
 			case "group":
 				msg = append(msg, GroupContact{ID: id})
 			}
+		case "location":
+			lat, err := strconv.ParseFloat(v.Data["lat"], 64)
+			if err != nil {
+				continue
+			}
+			lon, err := strconv.ParseFloat(v.Data["lon"], 64)
+			if err != nil {
+				continue
+			}
+			msg = append(msg, Location{
+				Lat:     lat,
+				Lon:     lon,
+				Title:   v.Data["title"],
+				Content: v.Data["content"],
+			})
+		case "reply":
+			id, err := strconv.ParseInt(v.Data["id"], 10, 32)
+			if err != nil {
+				continue
+			}
+			msg = append(msg, Reply{ID: int32(id)})
 		}
 	}
 	return msg
@@ -207,7 +248,28 @@ func (msg Msg) ToArrayMessage() ArrayMessage {
 					"id":   strconv.FormatInt(tmp.ID, 10),
 				},
 			})
+
+		case "location":
+			tmp := v.(Location)
+			arrayMsg = append(arrayMsg, arrayMessageUnit{
+				Type: "location",
+				Data: map[string]string{
+					"lat":     strconv.FormatFloat(tmp.Lat, 'f', -1, 64),
+					"lon":     strconv.FormatFloat(tmp.Lon, 'f', -1, 64),
+					"title":   tmp.Title,
+					"content": tmp.Content,
+				},
+			})
+		case "reply":
+			tmp := v.(Reply)
+			arrayMsg = append(arrayMsg, arrayMessageUnit{
+				Type: "reply",
+				Data: map[string]string{
+					"id": strconv.FormatInt(int64(tmp.ID), 10),
+				},
+			})
 		}
+
 	}
 	return arrayMsg
 }

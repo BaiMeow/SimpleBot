@@ -65,3 +65,13 @@ func (msg Msg) UserContact(id int64) Msg {
 func (msg Msg) GroupContact(id int64) Msg {
 	return append(msg, GroupContact{ID: id})
 }
+
+//Location 位置，建议单独发送该消息
+func (msg Msg) Location(lat, lon float64, title, content string) Msg {
+	return append(msg, Location{Lat: lat, Lon: lon, Title: title, Content: content})
+}
+
+//Reply 回复，建议放在第一个
+func (msg Msg) Reply(id int32) Msg {
+	return append(msg, Reply{ID: id})
+}
