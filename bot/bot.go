@@ -84,7 +84,10 @@ func (b *Bot) Attach(a listener) {
 		pos = "notice.group_decrease"
 	case *GroupKickMeHandler:
 		pos = "notice.group_decrease.kick_me"
-
+	case *GroupBanHandler:
+		pos = "notice.group_ban.ban"
+	case *GroupLiftBanHandler:
+		pos = "notice.group_ban.lift_ban"
 	}
 	// 其他信息
 	if b.listeners[pos] == nil {

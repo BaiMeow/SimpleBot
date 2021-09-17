@@ -63,6 +63,12 @@ type loginInfoDetails struct {
 	} `json:"data"`
 }
 
+type groupBan struct {
+	GroupID  int64 `json:"group_id"`
+	UserID   int64 `json:"user_id"`
+	Duration int64 `json:"duration"`
+}
+
 func handleAPIReply(data []byte) {
 	reply := new(preUnmarshalReply)
 	if err := json.Unmarshal(data, reply); err != nil {
@@ -232,4 +238,25 @@ func (b *Bot) getLoginInfo() (int64, string, error) {
 		return recInfo.Data.UserID, recInfo.Data.Nickname, nil
 	}
 	return 0, "", ErrJsonUnmarshal
+}
+
+//SetGroupBan 群禁言，duration单位为秒，传入0时解除禁言
+//
+//但是QQ貌似是按照分钟计算的，因此建议传入60的倍数
+func (b *Bot) SetGroupBan(GroupID, UserID, Duration int64) error {
+	id := uuid.New().String()
+	bytes, err := json.Marshal(&apiCallFramework{
+		Action: "set_group_ban",
+		Params: groupBan{
+			GroupID:  GroupID,
+			UserID:   UserID,
+			Duration: Duration,
+		},
+		Echo: id,
+	})
+	if err != nil {
+		return err
+	}
+	b.driver.Write(bytes)
+	return nil
 }

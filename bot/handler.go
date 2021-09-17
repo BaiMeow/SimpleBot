@@ -42,6 +42,18 @@ type GroupKickMeHandler struct {
 	F        func(GroupID, OperatorID int64) bool
 }
 
+// GroupBanHandler 群禁言,duration单位为秒
+type GroupBanHandler struct {
+	Priority int
+	F        func(GroupID, OperatorID, UserID, Duration int64) bool
+}
+
+// GroupLiftBanHandler 群解除禁言
+type GroupLiftBanHandler struct {
+	Priority int
+	F        func(GroupID, OperatorID, UserID int64) bool
+}
+
 func (h *GroupMsgHandler) getPriority() int {
 	return h.Priority
 }
@@ -63,5 +75,13 @@ func (h *GroupDecreaseHandler) getPriority() int {
 }
 
 func (h *GroupKickMeHandler) getPriority() int {
+	return h.Priority
+}
+
+func (h *GroupBanHandler) getPriority() int {
+	return h.Priority
+}
+
+func (h *GroupLiftBanHandler) getPriority() int {
 	return h.Priority
 }

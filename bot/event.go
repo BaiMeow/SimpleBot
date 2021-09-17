@@ -53,8 +53,14 @@ func handleEvent(data []byte, b *Bot) {
 		case "group_decrease":
 			if preload.SubType == "kick_me" {
 				handleGroupKickMe(data, b)
-			} else {
+			} else if preload.SubType == "kick" || preload.SubType == "leave" {
 				handleGroupDecrease(data, b)
+			}
+		case "group_ban":
+			if preload.SubType == "ban" {
+				handleGroupBan(data, b)
+			} else if preload.SubType == "lift_ban" {
+				handleGroupLiftBan(data, b)
 			}
 		}
 	case "request":
@@ -189,6 +195,42 @@ func handleGroupKickMe(data []byte, b *Bot) {
 	for _, v := range listener.heap {
 		v := v.(*GroupKickMeHandler)
 		if v.F(ev.GroupID, ev.OperatorID) {
+			return
+		}
+	}
+}
+
+func handleGroupBan(data []byte, b *Bot) {
+	if b.listeners["notice.group_ban.ban"] == nil {
+		return
+	}
+	listener := b.listeners["notice.group_ban.ban"]
+	ev := new(groupBanFull)
+	if err := json.Unmarshal(data, ev); err != nil {
+		log.Println(err)
+		return
+	}
+	for _, v := range listener.heap {
+		v := v.(*GroupBanHandler)
+		if v.F(ev.GroupID, ev.OperatorID, ev.UserID, ev.Duration) {
+			return
+		}
+	}
+}
+
+func handleGroupLiftBan(data []byte, b *Bot) {
+	if b.listeners["notice.group_ban.lift_ban"] == nil {
+		return
+	}
+	listener := b.listeners["notice.group_ban.lift_ban"]
+	ev := new(groupBanFull)
+	if err := json.Unmarshal(data, ev); err != nil {
+		log.Println(err)
+		return
+	}
+	for _, v := range listener.heap {
+		v := v.(*GroupLiftBanHandler)
+		if v.F(ev.GroupID, ev.OperatorID, ev.UserID) {
 			return
 		}
 	}

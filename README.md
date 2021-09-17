@@ -17,11 +17,11 @@
 - [x] message.private.friend 私聊
 - [x] notice.group_decrease.leave 群员自主退群*
 - [x] notice.group_decrease.kick 群员被踢*
-- [x] notice.group_decrease.kick_me 自己被踢*
+- [x] notice.group_decrease.kick_me 自己被踢
 - [ ] notice.group_increase.approve 群员被同意进群
 - [ ] notice.group_increase.invite 群员被邀请进群
-- [ ] notice.group_ban.ban 群禁言
-- [ ] notice.group_ban.lift_ban 群禁言解除
+- [x] notice.group_ban.ban 群禁言
+- [x] notice.group_ban.lift_ban 群禁言解除
 - [ ] notice.friend_add 加好友被同意
 - [ ] notice.group_recall 群撤回
 - [ ] notice.friend_recall 好友撤回
@@ -30,7 +30,7 @@
 - [x] request.group.add 他人加群请求
 - [x] request.group.invite 收到加群邀请
 
-> *群员退群的三个事件一起处理
+> *两个事件一起处理
 
 ### 以后再实现的事件
 
