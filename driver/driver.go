@@ -1,8 +1,8 @@
 package driver
 
 type Driver interface {
-	Run()
-	Write([]byte)
-	Read() []byte
-	Stop()
+	Run() error
+	Write([]byte) error
+	Read() ([]byte, error)
+	Stop() error
 }

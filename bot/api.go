@@ -122,7 +122,10 @@ func (b *Bot) SendGroupMsg(group int64, msg message.Msg) (int32, error) {
 		}
 		msgID <- details.Data.MessageID
 	}
-	b.driver.Write(bytes)
+	if err := b.driver.Write(bytes); err != nil {
+		delete(waitReply, id)
+		return 0, err
+	}
 	recMsgID := <-msgID
 	if recMsgID == 0 {
 		return 0, ErrJsonUnmarshal
@@ -159,7 +162,10 @@ func (b *Bot) SendPrivateMsg(qq int64, msg message.Msg) (int32, error) {
 		}
 		msgID <- details.Data.MessageID
 	}
-	b.driver.Write(bytes)
+	if err := b.driver.Write(bytes); err != nil {
+		delete(waitReply, id)
+		return 0, err
+	}
 	recMsgID := <-msgID
 	if recMsgID == 0 {
 		return 0, ErrJsonUnmarshal
@@ -183,8 +189,7 @@ func (b *Bot) respondGroupAdd(approve bool, flag, reason string) error {
 	if err != nil {
 		return err
 	}
-	b.driver.Write(bytes)
-	return nil
+	return b.driver.Write(bytes)
 }
 
 func (b *Bot) respondGroupInvite(approve bool, flag, reason string) error {
@@ -203,8 +208,7 @@ func (b *Bot) respondGroupInvite(approve bool, flag, reason string) error {
 	if err != nil {
 		return err
 	}
-	b.driver.Write(bytes)
-	return nil
+	return b.driver.Write(bytes)
 }
 
 func (b *Bot) getLoginInfo() (int64, string, error) {
@@ -232,7 +236,10 @@ func (b *Bot) getLoginInfo() (int64, string, error) {
 		}
 		info <- i
 	}
-	b.driver.Write(bytes)
+	if err := b.driver.Write(bytes); err != nil {
+		delete(waitReply, id)
+		return 0, "", err
+	}
 	recInfo := <-info
 	if recInfo != nil {
 		return recInfo.Data.UserID, recInfo.Data.Nickname, nil
@@ -257,6 +264,5 @@ func (b *Bot) SetGroupBan(GroupID, UserID, Duration int64) error {
 	if err != nil {
 		return err
 	}
-	b.driver.Write(bytes)
-	return nil
+	return b.driver.Write(bytes)
 }

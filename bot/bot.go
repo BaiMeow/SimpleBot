@@ -29,19 +29,27 @@ func New(d driver.Driver) *Bot {
 	return Bot
 }
 
-func (b *Bot) Run() {
-	b.driver.Run()
+func (b *Bot) Run() error {
+	if err := b.driver.Run(); err != nil {
+		return err
+	}
 	go func() {
 		for {
-			go handleEvent(b.driver.Read(), b)
+			data, err := b.driver.Read()
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			go handleEvent(data, b)
 		}
 	}()
 	id, nickname, err := b.getLoginInfo()
 	if err != nil {
-		log.Fatalln("获取登陆号信息失败")
+		return err
 	}
 	b.id = id
 	log.Println(fmt.Sprintf("已登陆到%s,qq号为%d", nickname, id))
+	return nil
 }
 
 func (b *Bot) Attach(a listener) {
@@ -106,4 +114,8 @@ func (b *Bot) Attach(a listener) {
 // GetID 获取当前登陆的qq号
 func (b *Bot) GetID() int64 {
 	return b.id
+}
+
+func (b *Bot) Stop() error {
+	return b.driver.Stop()
 }
