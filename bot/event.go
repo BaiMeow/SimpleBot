@@ -72,6 +72,8 @@ func handleEvent(data []byte, b *Bot) {
 			case "invite":
 				handleGroupInvite(data, b)
 			}
+		case "friend":
+			handleFriendAdd(data, b)
 		}
 	//不是Event那应该是api的回复
 	case "":
@@ -231,6 +233,30 @@ func handleGroupLiftBan(data []byte, b *Bot) {
 	for _, v := range listener.heap {
 		v := v.(*GroupLiftBanHandler)
 		if v.F(ev.GroupID, ev.OperatorID, ev.UserID) {
+			return
+		}
+	}
+}
+
+func handleFriendAdd(data []byte, b *Bot) {
+	if b.listeners["request.friend"] == nil {
+		return
+	}
+	listeners := b.listeners["request.friend"]
+	ev := new(friendAddFull)
+	if err := json.Unmarshal(data, ev); err != nil {
+		log.Println(err)
+		return
+	}
+	req := FriendRequest{
+		handle:  b.respondFriendAdd,
+		flag:    ev.Flag,
+		UserID:  ev.UserID,
+		Comment: ev.Comment,
+	}
+	for _, v := range listeners.heap {
+		v := v.(*FriendAddHandler)
+		if v.F(&req) {
 			return
 		}
 	}

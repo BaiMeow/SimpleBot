@@ -56,6 +56,12 @@ type groupAddOrInvite struct {
 	Reason  string `json:"reason"`
 }
 
+type friendAdd struct {
+	Flag    string `json:"flag"`
+	Approve bool   `json:"approve"`
+	Remark  string `json:"remark"`
+}
+
 type loginInfoDetails struct {
 	Data struct {
 		UserID   int64  `json:"user_id"`
@@ -209,6 +215,37 @@ func (b *Bot) respondGroupInvite(approve bool, flag, reason string) error {
 		return err
 	}
 	return b.writeWithRetry(bytes)
+}
+
+func (b *Bot) respondFriendAdd(approve bool, flag, remark string) error {
+	if !approve {
+		remark = ""
+	}
+	id := uuid.NewString()
+	bytes, err := json.Marshal(&apiCallFramework{
+		Action: "set_friend_add_request",
+		Params: friendAdd{
+			Flag:    flag,
+			Approve: approve,
+			Remark:  remark,
+		},
+		Echo: id,
+	})
+	if err != nil {
+		return err
+	}
+	ok := make(chan bool)
+	waitReply[id] = func(bytes []byte, b bool) {
+		ok <- b
+	}
+	if err := b.writeWithRetry(bytes); err != nil {
+		delete(waitReply, id)
+		return err
+	}
+	if !<-ok {
+		return errors.New("fail to handle friend add request")
+	}
+	return nil
 }
 
 func (b *Bot) getLoginInfo() (int64, string, error) {

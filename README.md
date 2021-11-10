@@ -26,7 +26,7 @@
 - [ ] notice.group_recall 群撤回
 - [ ] notice.friend_recall 好友撤回
 - [ ] notice.notify.poke 戳一戳
-- [ ] request.friend 加好友请求
+- [x] request.friend 加好友请求
 - [x] request.group.add 他人加群请求
 - [x] request.group.invite 收到加群邀请
 

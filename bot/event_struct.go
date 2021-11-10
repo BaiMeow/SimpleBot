@@ -2,9 +2,13 @@ package bot
 
 import "github.com/BaiMeow/SimpleBot/message"
 
+type basicEvent struct {
+	Time   int64 `json:"time"`
+	SelfID int64 `json:"self_id"`
+}
+
 type groupEventFull struct {
-	Time      int64 `json:"time"`
-	SelfID    int64 `json:"self_id"`
+	basicEvent
 	MessageID int32 `json:"message_id"`
 	GroupID   int64 `json:"group_id"`
 	UserID    int64 `json:"user_id"`
@@ -25,8 +29,7 @@ type groupEventFull struct {
 }
 
 type privateEventFull struct {
-	Time       int64                `json:"time"`
-	SelfID     int64                `json:"self_id"`
+	basicEvent
 	MessageID  int32                `json:"message_id"`
 	UserID     int64                `json:"user_id"`
 	Message    message.ArrayMessage `json:"message"`
@@ -41,8 +44,7 @@ type privateEventFull struct {
 }
 
 type groupReqEventFull struct {
-	Time    int64  `json:"time"`
-	SelfID  int64  `json:"self_id"`
+	basicEvent
 	GroupID int64  `json:"group_id"`
 	UserID  int64  `json:"user_id"`
 	Comment string `json:"comment"`
@@ -50,8 +52,7 @@ type groupReqEventFull struct {
 }
 
 type groupDecreaseFull struct {
-	Time       int64  `json:"time"`
-	SelfID     int64  `json:"self_id"`
+	basicEvent
 	GroupID    int64  `json:"group_id"`
 	OperatorID int64  `json:"operator_id"`
 	UserID     int64  `json:"user_id"`
@@ -59,12 +60,18 @@ type groupDecreaseFull struct {
 }
 
 type groupBanFull struct {
-	Time       int64 `json:"time"`
-	SelfID     int64 `json:"self_id"`
+	basicEvent
 	GroupID    int64 `json:"group_id"`
 	OperatorID int64 `json:"operator_id"`
 	UserID     int64 `json:"user_id"`
 	Duration   int64 `json:"duration"`
+}
+
+type friendAddFull struct {
+	basicEvent
+	UserID  int64  `json:"user_id"`
+	Comment string `json:"comment"`
+	Flag    string `json:"flag"`
 }
 
 func (f *groupEventFull) getMessage() *message.ArrayMessage {

@@ -54,6 +54,11 @@ type GroupLiftBanHandler struct {
 	F        func(GroupID, OperatorID, UserID int64) bool
 }
 
+type FriendAddHandler struct {
+	Priority int
+	F        func(request *FriendRequest) bool
+}
+
 func (h *GroupMsgHandler) getPriority() int {
 	return h.Priority
 }
@@ -83,5 +88,8 @@ func (h *GroupBanHandler) getPriority() int {
 }
 
 func (h *GroupLiftBanHandler) getPriority() int {
+	return h.Priority
+}
+func (h *FriendAddHandler) getPriority() int {
 	return h.Priority
 }
