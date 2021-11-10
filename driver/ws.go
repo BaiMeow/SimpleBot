@@ -20,7 +20,7 @@ func NewWsDriver(addr string, token string) *wsDriver {
 	return &wsDriver{
 		addr:   addr,
 		token:  token,
-		closed: false,
+		closed: true,
 	}
 }
 
@@ -40,6 +40,7 @@ func (d *wsDriver) Run() error {
 		conn, _, err = websocket.DefaultDialer.Dial(d.addr, header)
 		if err == nil {
 			d.conn = conn
+			d.closed = false
 			return nil
 		}
 	}
