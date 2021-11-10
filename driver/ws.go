@@ -1,13 +1,10 @@
 package driver
 
 import (
-	"errors"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 )
-
-var ErrConnClosed = errors.New("connection was closed")
 
 type wsDriver struct {
 	addr   string
@@ -70,6 +67,7 @@ func (d *wsDriver) Read() ([]byte, error) {
 			if d.closed {
 				return nil, nil
 			}
+			d.Stop()
 			if err := d.Run(); err != nil {
 				return nil, err
 			}

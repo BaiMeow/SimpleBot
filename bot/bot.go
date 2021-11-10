@@ -1,11 +1,13 @@
 package bot
 
 import (
+	"errors"
 	"fmt"
 	"github.com/BaiMeow/SimpleBot/driver"
 	"log"
 	"sort"
 	"sync"
+	"time"
 )
 
 type Bot struct {
@@ -36,9 +38,14 @@ func (b *Bot) Run() error {
 	go func() {
 		for {
 			data, err := b.driver.Read()
-			if err != nil {
+			for err != nil {
+				if errors.Is(err, driver.ErrConnClosed) {
+					log.Println("bot was stopped")
+					return
+				}
 				log.Println(err)
-				return
+				time.Sleep(time.Second)
+				err = b.driver.Run()
 			}
 			go handleEvent(data, b)
 		}

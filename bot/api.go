@@ -122,7 +122,7 @@ func (b *Bot) SendGroupMsg(group int64, msg message.Msg) (int32, error) {
 		}
 		msgID <- details.Data.MessageID
 	}
-	if err := b.driver.Write(bytes); err != nil {
+	if err := b.writeWithRetry(bytes); err != nil {
 		delete(waitReply, id)
 		return 0, err
 	}
@@ -162,7 +162,7 @@ func (b *Bot) SendPrivateMsg(qq int64, msg message.Msg) (int32, error) {
 		}
 		msgID <- details.Data.MessageID
 	}
-	if err := b.driver.Write(bytes); err != nil {
+	if err := b.writeWithRetry(bytes); err != nil {
 		delete(waitReply, id)
 		return 0, err
 	}
@@ -189,7 +189,7 @@ func (b *Bot) respondGroupAdd(approve bool, flag, reason string) error {
 	if err != nil {
 		return err
 	}
-	return b.driver.Write(bytes)
+	return b.writeWithRetry(bytes)
 }
 
 func (b *Bot) respondGroupInvite(approve bool, flag, reason string) error {
@@ -208,7 +208,7 @@ func (b *Bot) respondGroupInvite(approve bool, flag, reason string) error {
 	if err != nil {
 		return err
 	}
-	return b.driver.Write(bytes)
+	return b.writeWithRetry(bytes)
 }
 
 func (b *Bot) getLoginInfo() (int64, string, error) {
@@ -236,7 +236,7 @@ func (b *Bot) getLoginInfo() (int64, string, error) {
 		}
 		info <- i
 	}
-	if err := b.driver.Write(bytes); err != nil {
+	if err := b.writeWithRetry(bytes); err != nil {
 		delete(waitReply, id)
 		return 0, "", err
 	}
@@ -264,5 +264,5 @@ func (b *Bot) SetGroupBan(GroupID, UserID, Duration int64) error {
 	if err != nil {
 		return err
 	}
-	return b.driver.Write(bytes)
+	return b.writeWithRetry(bytes)
 }
