@@ -4,12 +4,15 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"sync"
 )
 
 type wsDriver struct {
 	addr   string
 	token  string
 	conn   *websocket.Conn
+	muR    sync.Mutex
+	muW    sync.Mutex
 	closed bool
 }
 
@@ -46,34 +49,38 @@ func (d *wsDriver) Run() error {
 
 func (d *wsDriver) Write(data []byte) error {
 	for {
-		if err := d.conn.WriteMessage(websocket.TextMessage, data); err != nil {
-			log.Printf("无法将消息发送到onebot:%v", err)
-			if d.closed {
-				return ErrConnClosed
-			}
-			if err := d.Run(); err != nil {
-				return err
-			}
-			continue
+		d.muW.Lock()
+		err := d.conn.WriteMessage(websocket.TextMessage, data)
+		d.muW.Unlock()
+		if err == nil {
+			return nil
 		}
-		return nil
+		log.Printf("无法将消息发送到onebot:%v", err)
+		if d.closed {
+			return ErrConnClosed
+		}
+		d.Stop()
+		if err := d.Run(); err != nil {
+			return err
+		}
 	}
 }
 func (d *wsDriver) Read() ([]byte, error) {
 	for {
+		d.muR.Lock()
 		_, p, err := d.conn.ReadMessage()
-		if err != nil {
-			log.Printf("无法从onebot拉取消息:%v", err)
-			if d.closed {
-				return nil, nil
-			}
-			d.Stop()
-			if err := d.Run(); err != nil {
-				return nil, err
-			}
-			continue
+		d.muR.Unlock()
+		if err == nil {
+			return p, nil
 		}
-		return p, nil
+		log.Printf("无法从onebot拉取消息:%v", err)
+		if d.closed {
+			return nil, nil
+		}
+		d.Stop()
+		if err := d.Run(); err != nil {
+			return nil, err
+		}
 	}
 }
 func (d *wsDriver) Stop() error {
